@@ -1,11 +1,12 @@
-mod functions;
-mod utils;
+pub mod functions;
+pub mod utils;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
-    x: f64,
-    y: f64,
-    z: f64
+    x: f32,
+    y: f32,
+    z: f32,
 }
 
-type Color = Vec3;
-type Point3 = Vec3;
+pub type Color = Vec3;
+pub type Point3 = Vec3;
