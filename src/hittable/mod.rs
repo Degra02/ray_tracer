@@ -1,12 +1,15 @@
 pub mod sphere;
 pub mod hittable_list;
 
-use crate::{ray::Ray, vec3::{Point3, Vec3, functions::dot}};
+// use std::{cell::RefCell, rc::Rc};
+
+use crate::{ray::Ray, vec3::{Point3, Vec3, functions::dot}, material::Material};
 
 #[derive(Clone, Default)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
+    pub material: Material,
     pub t: f32,
     pub front_face: bool
 }

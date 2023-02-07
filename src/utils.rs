@@ -38,9 +38,9 @@ pub fn write_color(pixel_color: Color, samples_per_pixel: i32) {
     let mut b = pixel_color[2];
     
     let scale = 1.0 / samples_per_pixel as f32;
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = f32::sqrt(r * scale);
+    g = f32::sqrt(g * scale);
+    b = f32::sqrt(b * scale);
 
     println!(
         "{} {} {}",

@@ -3,12 +3,13 @@ use std::{cell::RefCell, f32::INFINITY, rc::Rc};
 
 use hittable::{HitRecord, Hittable};
 use indicatif::ProgressBar;
+use material::scatter;
 use ray::Ray;
 use vec3::functions::{unit_vec, dot};
 
 use crate::{
     hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float},
+    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float}, material::Material,
 };
 
 mod camera;
@@ -16,13 +17,20 @@ mod hittable;
 mod ray;
 mod utils;
 mod vec3;
+mod material;
 
 pub const ASPECT_RATIO: f32 = 16.0 / 9.0;
-pub const WIDTH: i32 = 960;
+pub const WIDTH: i32 = 900;
 pub const HEIGHT: i32 = (WIDTH as f32 / ASPECT_RATIO) as i32;
 
 fn main() {
     let samples_per_pixel = 100;
+    let max_depth = 50;
+
+    let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
+    let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
+    let material_metal = Material::Metal { albedo: Color::new(0.8, 0.8, 0.8) };
+    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4) };
 
     // Camera
     let camera = Camera::new();
@@ -32,10 +40,22 @@ fn main() {
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., 0., -1.),
         0.5,
+        material_normal
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
-        100.,
+        90.,
+        material_ground
+    ))));
+    world.add(Rc::new(RefCell::new(Sphere::new(
+        Point3::new(1., 0., -1.),
+        0.5,
+        material_metal
+    ))));
+    world.add(Rc::new(RefCell::new(Sphere::new(
+        Point3::new(-1., 0., -1.),
+        0.5,
+        material_metal2
     ))));
 
     // Render
@@ -49,7 +69,7 @@ fn main() {
                 let u = (i as f32 + random_float()) / (WIDTH - 1) as f32;
                 let v = (j as f32 + random_float()) / (HEIGHT - 1) as f32;
                 let r = camera.get_ray(u, v);
-                pixel_color += ray_color(r, &mut world);
+                pixel_color += ray_color(r, &mut world, max_depth);
             }
             write_color(pixel_color, samples_per_pixel);
         }
@@ -57,10 +77,21 @@ fn main() {
     pb.finish_with_message("Done");
 }
 
-pub fn ray_color(ray: Ray, world: &mut dyn Hittable) -> Color {
+pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
     let mut rec = HitRecord::default();
-    if world.hit(ray, 0., INFINITY, &mut rec) {
-        return 0.5 * (rec.normal + Color::new(1., 1., 1.));
+
+    if depth <= 0 {
+       return Color::new(0., 0., 0.) 
+    }
+
+    if world.hit(ray, 0.0001, INFINITY, &mut rec) {
+        // let target: Point3 = rec.p + rec.normal + Vec3::random_unit_vector();
+        let mut scattered: Ray = Ray::default();
+        let mut attenuation: Color = Color::default();
+        if scatter(rec.material, ray, rec, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(scattered, world, depth-1);
+        }
+        return Color::new(0., 0., 0.)
     }
     let unit_direction = unit_vec(ray.dir());
     let t = 0.5 * (unit_direction[1] + 1.0);

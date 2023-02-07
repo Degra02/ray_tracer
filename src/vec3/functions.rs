@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use fast_inv_sqrt::InvSqrt32;
+
 use crate::utils::{random_float, random_float_range};
 
 use super::Vec3;
@@ -11,23 +13,23 @@ impl Vec3 {
     }
 
     pub fn norm(&self) -> f32 {
-        f32::sqrt(self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2])
+        1.0 / (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt32() 
     }
 
     pub fn norm_squared(&self) -> f32 {
-        self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
+        self[0] * self[0] + self[1] * self[1] + self[2] * self[2]
     }
 
     pub fn x(&self) -> f32 {
-        self.e[0]
+        self[0]
     }
 
     pub fn y(&self) -> f32 {
-        self.e[1]
+        self[1]
     }
 
     pub fn z(&self) -> f32 {
-        self.e[2]
+        self[2]
     }
 
     pub fn random() -> Self {
@@ -37,7 +39,35 @@ impl Vec3 {
     pub fn random_range(min: f32, max: f32) -> Self {
         Self::new(random_float_range(min, max), random_float_range(min, max), random_float_range(min, max))
     }
+    
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Vec3::random_range(-1., 1.);
+            if p.norm_squared() >= 1. {
+                continue;
+            } else {
+                return p;
+            }
+        }
+    }
 
+    pub fn random_unit_vector() -> Self {
+        unit_vec(Vec3::random_in_unit_sphere())
+    }
+
+    pub fn random_in_hemisphere(normal: Vec3) -> Self {
+        let in_unit_sphere = Vec3::random_in_unit_sphere();
+        if dot(in_unit_sphere, normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self[0].abs() < s && self[1].abs() < s && self[2].abs() < s
+    }
 }
 
 pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
@@ -53,12 +83,17 @@ pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
 }
 
 pub fn unit_vec(vec: Vec3) -> Vec3 {
-    vec / vec.norm()
+    // vec / vec.norm()
+    vec * (vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]).inv_sqrt32()
+}
+
+pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+    v - 2. * dot(v, n) * n
 }
 
 impl Display for Vec3 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[{}, {}, {}]", self.e[0], self.e[1], self.e[2])
+        write!(f, "[{}, {}, {}]", self[0], self[1], self[2])
     }
 }
 
@@ -81,9 +116,9 @@ impl std::ops::Add for Vec3 {
 
     fn add(self, rhs: Self) -> Self::Output {
         Vec3::new(
-            self.e[0] + rhs.e[0],
-            self.e[1] + rhs.e[1],
-            self.e[2] + rhs.e[2],
+            self[0] + rhs[0],
+            self[1] + rhs[1],
+            self[2] + rhs[2],
         )
     }
 }
@@ -92,23 +127,23 @@ impl std::ops::Sub for Vec3 {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        Self::new(self.e[0] - rhs[0], self.e[1] - rhs[1], self.e[2] - rhs[2])
+        Self::new(self[0] - rhs[0], self[1] - rhs[1], self[2] - rhs[2])
     }
 }
 
 impl std::ops::AddAssign for Vec3 {
     fn add_assign(&mut self, rhs: Self) {
-        self.e[0] += rhs[0];
-        self.e[1] += rhs[1];
-        self.e[2] += rhs[2];
+        self[0] += rhs[0];
+        self[1] += rhs[1];
+        self[2] += rhs[2];
     }
 }
 
 impl std::ops::SubAssign for Vec3 {
     fn sub_assign(&mut self, rhs: Self) {
-        self.e[0] -= rhs[0];
-        self.e[1] -= rhs[1];
-        self.e[2] -= rhs[2];
+        self[0] -= rhs[0];
+        self[1] -= rhs[1];
+        self[2] -= rhs[2];
     }
 }
 
@@ -156,6 +191,6 @@ impl std::ops::Div<f32> for Vec3 {
     type Output = Self;
 
     fn div(self, rhs: f32) -> Self::Output {
-        Self::new(self.e[0] / rhs, self.e[1] / rhs, self.e[2] / rhs)
+        Self::new(self[0] / rhs, self[1] / rhs, self[2] / rhs)
     }
 }

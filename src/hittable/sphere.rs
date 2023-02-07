@@ -1,4 +1,5 @@
 use super::HitRecord;
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::Point3;
 use crate::vec3::functions::dot;
@@ -9,11 +10,12 @@ use super::Hittable;
 pub struct Sphere {
     pub center: Point3,
     pub radius: f32,
+    pub material: Material
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f32) -> Self {
-        Self { center, radius }
+    pub fn new(center: Point3, radius: f32, material: Material) -> Self {
+        Self { center, radius, material}
     }
 }
 
@@ -41,6 +43,7 @@ impl Hittable for Sphere {
         rec.p = r.at(root);
         let outward_normal = (rec.p - self.center) / self.radius;
         rec.set_face_normal(r, outward_normal);
+        rec.material = self.material;
 
         true
     }
