@@ -1,5 +1,4 @@
 pub mod functions;
-pub mod utils;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Vec3 {

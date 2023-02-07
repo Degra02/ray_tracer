@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use crate::utils::{random_float, random_float_range};
+
 use super::Vec3;
 use std::{borrow::Borrow, fmt::Display};
 
@@ -27,6 +29,31 @@ impl Vec3 {
     pub fn z(&self) -> f32 {
         self.e[2]
     }
+
+    pub fn random() -> Self {
+        Self::new(random_float(), random_float(), random_float())
+    }
+
+    pub fn random_range(min: f32, max: f32) -> Self {
+        Self::new(random_float_range(min, max), random_float_range(min, max), random_float_range(min, max))
+    }
+
+}
+
+pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
+    v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+}
+
+pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
+    Vec3::new(
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v1[0] * v2[2],
+        v1[0] * v2[1] - v1[1] * v2[0],
+    )
+}
+
+pub fn unit_vec(vec: Vec3) -> Vec3 {
+    vec / vec.norm()
 }
 
 impl Display for Vec3 {

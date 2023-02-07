@@ -4,11 +4,11 @@ use std::{cell::RefCell, f32::INFINITY, rc::Rc};
 use hittable::{HitRecord, Hittable};
 use indicatif::ProgressBar;
 use ray::Ray;
-use vec3::utils::{dot, unit_vec};
+use vec3::functions::{unit_vec, dot};
 
 use crate::{
     hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::{Color, Point3, Vec3}, camera::{ASPECT_RATIO, HEIGHT, WIDTH, Camera}, utils::{write_color, random_float},
+    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float},
 };
 
 mod camera;
@@ -16,6 +16,10 @@ mod hittable;
 mod ray;
 mod utils;
 mod vec3;
+
+pub const ASPECT_RATIO: f32 = 16.0 / 9.0;
+pub const WIDTH: i32 = 960;
+pub const HEIGHT: i32 = (WIDTH as f32 / ASPECT_RATIO) as i32;
 
 fn main() {
     let samples_per_pixel = 100;

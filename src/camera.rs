@@ -1,10 +1,4 @@
-use crate::{vec3::{Point3, Vec3}, ray::Ray};
-
-
-pub const ASPECT_RATIO: f32 = 16.0 / 9.0;
-pub const WIDTH: i32 = 400;
-pub const HEIGHT: i32 = (WIDTH as f32 / ASPECT_RATIO) as i32;
-
+use crate::{vec3::{Point3, Vec3}, ray::Ray, ASPECT_RATIO};
 
 pub struct Camera {
     origin: Point3,

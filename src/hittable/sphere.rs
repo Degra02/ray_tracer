@@ -1,7 +1,7 @@
 use super::HitRecord;
 use crate::ray::Ray;
-use crate::vec3::utils::dot;
 use crate::vec3::Point3;
+use crate::vec3::functions::dot;
 
 use super::Hittable;
 
