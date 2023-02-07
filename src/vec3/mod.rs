@@ -1,9 +1,9 @@
 pub mod functions;
 pub mod utils;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Vec3 {
-    e: [f32; 3]
+    e: [f32; 3],
 }
 
 pub type Color = Vec3;

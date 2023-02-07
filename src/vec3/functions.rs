@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use super::Vec3;
-use std::{fmt::Display, borrow::Borrow};
+use std::{borrow::Borrow, fmt::Display};
 
 impl Vec3 {
     pub fn new(e0: f32, e1: f32, e2: f32) -> Self {
@@ -9,15 +9,11 @@ impl Vec3 {
     }
 
     pub fn norm(&self) -> f32 {
-        f32::sqrt(self.e[0]*self.e[0] + 
-                  self.e[1]*self.e[1] + 
-                  self.e[2]*self.e[2])
+        f32::sqrt(self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2])
     }
 
-    pub fn norm_squared(&self) -> f32 { 
-        self.e[0]*self.e[0] + 
-            self.e[1]*self.e[1] + 
-            self.e[2]*self.e[2]
+    pub fn norm_squared(&self) -> f32 {
+        self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
     }
 
     pub fn x(&self) -> f32 {
@@ -57,7 +53,11 @@ impl std::ops::Add for Vec3 {
     type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Vec3::new(self.e[0] + rhs.e[0], self.e[1] + rhs.e[1], self.e[2] + rhs.e[2])
+        Vec3::new(
+            self.e[0] + rhs.e[0],
+            self.e[1] + rhs.e[1],
+            self.e[2] + rhs.e[2],
+        )
     }
 }
 

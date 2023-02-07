@@ -12,15 +12,6 @@ pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
     )
 }
 
-pub fn write_color(color: Color) {
-    println!(
-        "{} {} {}",
-        (255.999 * color[0]) as u8,
-        (255.999 * color[1]) as u8,
-        (255.999 * color[2]) as u8
-    )
-}
-
 pub fn unit_vec(vec: Vec3) -> Vec3 {
     vec / vec.norm()
 }
