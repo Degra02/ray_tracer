@@ -1,23 +1,23 @@
 use super::{Color, Vec3};
 
 pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
-    v1.x() * v2.x() + v1.y() * v2.y() + v1.z() + v2.z()
+    v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
 }
 
 pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
     Vec3::new(
-        v1.y() * v2.z() - v1.z() * v2.y(),
-        v1.z() * v2.x() - v1.x() * v2.z(),
-        v1.x() * v2.y() - v1.y() * v2.x(),
+        v1[1] * v2[2] - v1[2] * v2[1],
+        v1[2] * v2[0] - v1[0] * v2[2],
+        v1[0] * v2[1] - v1[1] * v2[0],
     )
 }
 
 pub fn write_color(color: Color) {
     println!(
         "{} {} {}",
-        (255.999 * color.x()) as i32,
-        (255.999 * color.y()) as i32,
-        (255.999 * color.z()) as i32
+        (255.999 * color[0]) as u8,
+        (255.999 * color[1]) as u8,
+        (255.999 * color[2]) as u8
     )
 }
 
