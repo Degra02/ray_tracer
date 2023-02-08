@@ -91,6 +91,10 @@ pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - 2. * dot(v, n) * n
 }
 
+pub fn refract(uv: Vec3, n: Vec3, etai_over_eta: f32) -> Vec3 {
+    todo!()
+}
+
 impl Display for Vec3 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "[{}, {}, {}]", self[0], self[1], self[2])

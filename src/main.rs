@@ -29,8 +29,8 @@ fn main() {
 
     let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
     let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
-    let material_metal = Material::Metal { albedo: Color::new(0.8, 0.8, 0.8) };
-    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4) };
+    let material_metal = Material::Metal { albedo: Color::new(0.8, 0.8, 0.8), fuzz: 0.1 };
+    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4), fuzz: 0.9 };
 
     // Camera
     let camera = Camera::new();
@@ -53,13 +53,14 @@ fn main() {
         material_metal
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(-1., 0., -1.),
-        0.5,
+        Point3::new(0., 0.9, -1.),
+        0.2,
         material_metal2
     ))));
 
     // Render
     let pb = ProgressBar::new(HEIGHT as u64);
+
     println!("P3\n{} {}\n255", WIDTH, HEIGHT);
     for j in (0..HEIGHT).rev() {
         pb.inc(1);
@@ -74,7 +75,7 @@ fn main() {
             write_color(pixel_color, samples_per_pixel);
         }
     }
-    pb.finish_with_message("Done");
+    pb.finish_and_clear();
 }
 
 pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
@@ -95,7 +96,7 @@ pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
     }
     let unit_direction = unit_vec(ray.dir());
     let t = 0.5 * (unit_direction[1] + 1.0);
-    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
+    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.7, 0.7, 1.0)
 }
 
 pub fn hit_sphere(center: Point3, radius: f32, ray: Ray) -> f32 {
