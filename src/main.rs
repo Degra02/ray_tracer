@@ -28,7 +28,7 @@ fn main() {
     let max_depth = 50;
 
     // Camera
-    let look_from = Point3::new(-2., 2., 1.);
+    let look_from = Point3::new(0., 1., 1.);
     let look_at = Point3::new(0., 0., -1.);
     let vup = Vec3::new(0., 1., 0.);
     let camera = Camera::new(look_from, look_at, vup, 50.0, ASPECT_RATIO);
@@ -36,7 +36,7 @@ fn main() {
     // World initialization
     let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
     let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
-    let material_dielectric = Material::Dielectric { ir: 1.5};
+    let material_metal = Material::Metal { albedo: Color::new(0.3, 0.4, 1.0), fuzz: 0.1 };
     let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4), fuzz: 0.4 };
 
     let mut world = HittableList::default();
@@ -47,13 +47,13 @@ fn main() {
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
-        90.,
+        100.,
         material_ground
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(1., 0., -1.),
         -0.5,
-        material_metal2
+        material_metal
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., 0.9, -1.),
