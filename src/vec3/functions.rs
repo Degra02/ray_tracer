@@ -5,7 +5,7 @@ use fast_inv_sqrt::InvSqrt32;
 use crate::utils::{random_float, random_float_range};
 
 use super::Vec3;
-use std::{borrow::Borrow, fmt::Display};
+use std::{fmt::Display};
 
 impl Vec3 {
     pub fn new(e0: f32, e1: f32, e2: f32) -> Self {
@@ -92,7 +92,11 @@ pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
 }
 
 pub fn refract(uv: Vec3, n: Vec3, etai_over_eta: f32) -> Vec3 {
-    todo!()
+    let cos_theta = f32::min(dot(-uv, n), 1.0);
+    let r_out_perp = etai_over_eta * (uv + cos_theta*n);
+    let r_out_parallel = -f32::sqrt((1.0 - r_out_perp.norm_squared()).abs()) * n;
+
+    r_out_perp + r_out_parallel
 }
 
 impl Display for Vec3 {
