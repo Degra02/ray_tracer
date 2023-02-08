@@ -27,15 +27,18 @@ fn main() {
     let samples_per_pixel = 100;
     let max_depth = 50;
 
-    let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
-    let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
-    let material_metal = Material::Metal { albedo: Color::new(0.8, 0.8, 0.8), fuzz: 0.1 };
-    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4), fuzz: 0.9 };
-
     // Camera
-    let camera = Camera::new();
+    let look_from = Point3::new(-2., 2., 1.);
+    let look_at = Point3::new(0., 0., -1.);
+    let vup = Vec3::new(0., 1., 0.);
+    let camera = Camera::new(look_from, look_at, vup, 50.0, ASPECT_RATIO);
 
     // World initialization
+    let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
+    let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
+    let material_dielectric = Material::Dielectric { ir: 1.5};
+    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4), fuzz: 0.4 };
+
     let mut world = HittableList::default();
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., 0., -1.),
@@ -49,8 +52,8 @@ fn main() {
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(1., 0., -1.),
-        0.5,
-        material_metal
+        -0.5,
+        material_metal2
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., 0.9, -1.),
@@ -61,7 +64,7 @@ fn main() {
     // Render
     let pb = ProgressBar::new(HEIGHT as u64);
 
-    println!("P3\n{} {}\n255", WIDTH, HEIGHT);
+    println!("P3\n{WIDTH} {HEIGHT}\n255");
     for j in (0..HEIGHT).rev() {
         pb.inc(1);
         for i in 0..WIDTH {
