@@ -10,7 +10,7 @@ pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
     pub material: Material,
-    pub t: f32,
+    pub t: f64,
     pub front_face: bool
 }
 
@@ -25,5 +25,5 @@ impl HitRecord {
 
 
 pub trait Hittable {
-    fn hit(&self, r: Ray, t_min: f32, t_max: f32, hit_record: &mut HitRecord) -> bool;
+    fn hit(&self, r: Ray, t_min: f64, t_max: f64, hit_record: &mut HitRecord) -> bool;
 }

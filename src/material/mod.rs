@@ -10,10 +10,10 @@ pub enum Material {
     },
     Metal {
         albedo: Color,
-        fuzz: f32,
+        fuzz: f64,
     },
     Dielectric{
-        ir: f32
+        ir: f64
     }
 }
 
@@ -32,11 +32,11 @@ impl Material {
         }
     }
 
-    pub fn new_metal(albedo: Color, fuzz: f32) -> Self {
+    pub fn new_metal(albedo: Color, fuzz: f64) -> Self {
         Self::Metal { albedo, fuzz }
     }
 
-    pub fn new_dielectric(ir: f32) -> Self {
+    pub fn new_dielectric(ir: f64) -> Self {
         Self::Dielectric { ir }
     }
 }
@@ -68,8 +68,8 @@ pub fn scatter(material: Material, ray_in: Ray, rec: HitRecord, attenuation: &mu
 
             let unit_direction = unit_vec(ray_in.dir());
 
-            let cos_theta = f32::min(dot(-unit_direction, rec.normal), 1.0);
-            let sin_theta = f32::sqrt(1.0 - cos_theta*cos_theta);
+            let cos_theta = f64::min(dot(-unit_direction, rec.normal), 1.0);
+            let sin_theta = f64::sqrt(1.0 - cos_theta*cos_theta);
             
             let cannot_refract: bool = refraction_ratio * sin_theta > 1.0;
             let direction: Vec3;
@@ -86,10 +86,10 @@ pub fn scatter(material: Material, ray_in: Ray, rec: HitRecord, attenuation: &mu
     }
 }
 
-pub fn reflectance(cosine: f32, ref_idx: f32) -> f32 {
+pub fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
     let mut r0 = (1. - ref_idx) / (1. + ref_idx); 
     r0 *= r0;
-    r0 + (1. - r0)* f32::powi(1. - cosine, 5)
+    r0 + (1. - r0)* f64::powi(1. - cosine, 5)
 }
 
 

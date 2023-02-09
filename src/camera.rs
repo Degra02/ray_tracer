@@ -8,9 +8,9 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(look_from: Point3, look_at: Point3, vup: Vec3, vfov: f32, aspect_ratio: f32) -> Self {
+    pub fn new(look_from: Point3, look_at: Point3, vup: Vec3, vfov: f64, aspect_ratio: f64) -> Self {
         let theta = deg_to_rad(vfov);
-        let h = f32::tan(theta/2.);
+        let h = f64::tan(theta/2.);
 
         let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
@@ -33,7 +33,7 @@ impl Camera {
         }
     }
 
-    pub fn get_ray(&self, s: f32, t: f32) -> Ray {
+    pub fn get_ray(&self, s: f64, t: f64) -> Ray {
         Ray::new(self.origin, 
                  self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin)
     }

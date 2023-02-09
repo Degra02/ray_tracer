@@ -1,15 +1,15 @@
 #![allow(dead_code)]
-use std::{cell::RefCell, f32::INFINITY, rc::Rc};
+use std::{cell::RefCell, f64::INFINITY, rc::Rc, fs::File, io::Write};
 
 use hittable::{HitRecord, Hittable};
-use indicatif::ProgressBar;
+use indicatif::{ProgressBar, MultiProgress};
 use material::scatter;
 use ray::Ray;
 use vec3::functions::{unit_vec, dot};
 
 use crate::{
     hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float}, material::Material,
+    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float, gen_random_spheres}, material::Material,
 };
 
 mod camera;
@@ -19,9 +19,10 @@ mod utils;
 mod vec3;
 mod material;
 
-pub const ASPECT_RATIO: f32 = 16.0 / 9.0;
+pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
 pub const WIDTH: i32 = 900;
-pub const HEIGHT: i32 = (WIDTH as f32 / ASPECT_RATIO) as i32;
+pub const HEIGHT: i32 = (WIDTH as f64 / ASPECT_RATIO) as i32;
+pub const FRAMES: u32 = 120;
 
 fn main() {
     let samples_per_pixel = 100;
@@ -36,49 +37,61 @@ fn main() {
     // World initialization
     let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
     let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
-    let material_metal = Material::Metal { albedo: Color::new(0.3, 0.4, 1.0), fuzz: 0.1 };
-    let material_metal2 = Material::Metal { albedo: Color::new(0.9, 0.3, 0.4), fuzz: 0.4 };
+    let material_metal = Material::Metal { albedo: Color::new(0.4, 0.4, 0.4), fuzz: 0.1 };
+    let material_metal2 = Material::Metal { albedo: Color::new(0.4, 0.5, 1.0), fuzz: 0.4 };
+    let material_dielectric = Material::Dielectric { ir: 0.7 };
+
+    let mut moving_sphere = Rc::new(RefCell::new(Sphere::new(
+        Point3::new(-1., 0., -1.),
+        0.5,
+        material_metal2
+    )));
 
     let mut world = HittableList::default();
-    world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(0., 0., -1.),
-        0.5,
-        material_normal
-    ))));
+    world.add(moving_sphere.clone());
     world.add(Rc::new(RefCell::new(Sphere::new(
         Point3::new(0., -100.5, -1.),
         100.,
         material_ground
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(1., 0., -1.),
+        Point3::new(1.8, 0., -3.),
         -0.5,
-        material_metal
+        material_dielectric
     ))));
     world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(0., 0.9, -1.),
+        Point3::new(-1.1, 0.9, -1.),
         0.2,
-        material_metal2
+        material_metal
     ))));
 
     // Render
-    let pb = ProgressBar::new(HEIGHT as u64);
 
-    println!("P3\n{WIDTH} {HEIGHT}\n255");
-    for j in (0..HEIGHT).rev() {
+    let pb = ProgressBar::new(FRAMES as u64); 
+    pb.println("Rendering...");
+    for frame in 0..FRAMES {
         pb.inc(1);
-        for i in 0..WIDTH {
-            let mut pixel_color = Color::new(0., 0., 0.); 
-            for _ in 0..samples_per_pixel {
-                let u = (i as f32 + random_float()) / (WIDTH - 1) as f32;
-                let v = (j as f32 + random_float()) / (HEIGHT - 1) as f32;
-                let r = camera.get_ray(u, v);
-                pixel_color += ray_color(r, &mut world, max_depth);
+        let mut file = File::create(format!("./data/{:03}.ppm", frame)).unwrap(); 
+        file.write_all(format!("P3\n{WIDTH} {HEIGHT}\n255\n").as_bytes()).unwrap();
+        
+        for j in (0..HEIGHT).rev() {
+            for i in 0..WIDTH {
+                let mut pixel_color = Color::new(0., 0., 0.); 
+                for _ in 0..samples_per_pixel {
+                    let u = (i as f64 + random_float()) / (WIDTH - 1) as f64;
+                    let v = (j as f64 + random_float()) / (HEIGHT - 1) as f64;
+                    let r = camera.get_ray(u, v);
+                    pixel_color += ray_color(r, &mut world, max_depth);
+                }
+                write_color(pixel_color, samples_per_pixel, &mut file);
             }
-            write_color(pixel_color, samples_per_pixel);
         }
+        
+        let pos = (*moving_sphere).borrow_mut().center;
+        (moving_sphere).borrow_mut().center = pos + Point3::new(0.016, 0., 0.);
+
     }
-    pb.finish_and_clear();
+    pb.finish_with_message("Rendering complete!");
 }
 
 pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
@@ -102,7 +115,7 @@ pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.7, 0.7, 1.0)
 }
 
-pub fn hit_sphere(center: Point3, radius: f32, ray: Ray) -> f32 {
+pub fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
     let oc = ray.origin() - center;
     let a = ray.dir().norm_squared();
     let half_b = dot(oc, ray.dir());
@@ -111,6 +124,6 @@ pub fn hit_sphere(center: Point3, radius: f32, ray: Ray) -> f32 {
     if discriminant < 0.0 {
         -1.
     } else {
-        (-half_b - f32::sqrt(discriminant)) / a
+        (-half_b - f64::sqrt(discriminant)) / a
     }
 }

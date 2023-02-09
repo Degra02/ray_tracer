@@ -1,34 +1,35 @@
 #![allow(dead_code)]
 
-use fast_inv_sqrt::InvSqrt32;
+use fast_inv_sqrt::InvSqrt64;
 
 use crate::utils::{random_float, random_float_range};
 
-use super::Vec3;
-use std::{fmt::Display};
+use super::{Vec3, Point3};
+use std::fmt::Display;
 
 impl Vec3 {
-    pub fn new(e0: f32, e1: f32, e2: f32) -> Self {
+    pub fn new(e0: f64, e1: f64, e2: f64) -> Self {
         Self { e: [e0, e1, e2] }
     }
 
-    pub fn norm(&self) -> f32 {
-        1.0 / (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt32() 
+    pub fn norm(&self) -> f64 {
+        1.0 / (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt64() 
+        // f64::sqrt(self[0] * self[0] + self[1] * self[1] + self[2] * self[2])
     }
 
-    pub fn norm_squared(&self) -> f32 {
+    pub fn norm_squared(&self) -> f64 {
         self[0] * self[0] + self[1] * self[1] + self[2] * self[2]
     }
 
-    pub fn x(&self) -> f32 {
+    pub fn x(&self) -> f64 {
         self[0]
     }
 
-    pub fn y(&self) -> f32 {
+    pub fn y(&self) -> f64 {
         self[1]
     }
 
-    pub fn z(&self) -> f32 {
+    pub fn z(&self) -> f64 {
         self[2]
     }
 
@@ -36,7 +37,7 @@ impl Vec3 {
         Self::new(random_float(), random_float(), random_float())
     }
 
-    pub fn random_range(min: f32, max: f32) -> Self {
+    pub fn random_range(min: f64, max: f64) -> Self {
         Self::new(random_float_range(min, max), random_float_range(min, max), random_float_range(min, max))
     }
     
@@ -70,7 +71,7 @@ impl Vec3 {
     }
 }
 
-pub fn dot(v1: Vec3, v2: Vec3) -> f32 {
+pub fn dot(v1: Vec3, v2: Vec3) -> f64 {
     v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
 }
 
@@ -84,17 +85,17 @@ pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
 
 pub fn unit_vec(vec: Vec3) -> Vec3 {
     // vec / vec.norm()
-    vec * (vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]).inv_sqrt32()
+    vec * (vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]).inv_sqrt64()
 }
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v - 2. * dot(v, n) * n
 }
 
-pub fn refract(uv: Vec3, n: Vec3, etai_over_eta: f32) -> Vec3 {
-    let cos_theta = f32::min(dot(-uv, n), 1.0);
+pub fn refract(uv: Vec3, n: Vec3, etai_over_eta: f64) -> Vec3 {
+    let cos_theta = f64::min(dot(-uv, n), 1.0);
     let r_out_perp = etai_over_eta * (uv + cos_theta*n);
-    let r_out_parallel = -f32::sqrt((1.0 - r_out_perp.norm_squared()).abs()) * n;
+    let r_out_parallel = -f64::sqrt((1.0 - r_out_perp.norm_squared()).abs()) * n;
 
     r_out_perp + r_out_parallel
 }
@@ -106,7 +107,7 @@ impl Display for Vec3 {
 }
 
 impl std::ops::Index<usize> for Vec3 {
-    type Output = f32;
+    type Output = f64;
 
     fn index(&self, index: usize) -> &Self::Output {
         &self.e[index]
@@ -155,7 +156,7 @@ impl std::ops::SubAssign for Vec3 {
     }
 }
 
-impl std::ops::Mul<Vec3> for f32 {
+impl std::ops::Mul<Vec3> for f64 {
     type Output = Vec3;
 
     fn mul(self, rhs: Vec3) -> Self::Output {
@@ -163,10 +164,10 @@ impl std::ops::Mul<Vec3> for f32 {
     }
 }
 
-impl std::ops::Mul<f32> for Vec3 {
+impl std::ops::Mul<f64> for Vec3 {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Self::Output {
+    fn mul(self, rhs: f64) -> Self::Output {
         Self::new(self[0] * rhs, self[1] * rhs, self[2] * rhs)
     }
 }
@@ -187,18 +188,18 @@ impl std::ops::Neg for Vec3 {
     }
 }
 
-impl std::ops::MulAssign<f32> for Vec3 {
-    fn mul_assign(&mut self, rhs: f32) {
+impl std::ops::MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, rhs: f64) {
         self[0] *= rhs;
         self[1] *= rhs;
         self[2] *= rhs;
     }
 }
 
-impl std::ops::Div<f32> for Vec3 {
+impl std::ops::Div<f64> for Vec3 {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Self::Output {
+    fn div(self, rhs: f64) -> Self::Output {
         Self::new(self[0] / rhs, self[1] / rhs, self[2] / rhs)
     }
 }
