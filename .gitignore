@@ -1,4 +1,6 @@
 /target
 .idea
 Cargo.lock
+data/
+!data/*.mp4
 
