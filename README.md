@@ -5,5 +5,5 @@ Porting of a ray tracer in Rust.
 ![image](./image.jpeg)
 
 ### Video Render (multiple static images + ffmpeg)
-https://user-images.githubusercontent.com/80328248/218058378-19a44654-1b14-4e94-8829-e48ebdc7a92a.mp4
+https://user-images.githubusercontent.com/80328248/218059523-7f6aae5c-d491-475c-ac7d-93f55fde9959.mp4
 
