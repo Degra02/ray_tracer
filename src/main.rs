@@ -2,7 +2,7 @@
 use std::{cell::RefCell, f64::INFINITY, rc::Rc, fs::File, io::Write};
 
 use hittable::{HitRecord, Hittable};
-use indicatif::{ProgressBar, MultiProgress};
+use indicatif::{ProgressBar, MultiProgress, ProgressStyle};
 use material::scatter;
 use ray::Ray;
 use vec3::functions::{unit_vec, dot};
@@ -20,9 +20,9 @@ mod vec3;
 mod material;
 
 pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
-pub const WIDTH: i32 = 900;
+pub const WIDTH: i32 = 400;
 pub const HEIGHT: i32 = (WIDTH as f64 / ASPECT_RATIO) as i32;
-pub const FRAMES: u32 = 120;
+pub const FRAMES: u32 = 60;
 
 fn main() {
     let samples_per_pixel = 100;
@@ -67,14 +67,20 @@ fn main() {
 
     // Render
 
-    let pb = ProgressBar::new(FRAMES as u64); 
-    pb.println("Rendering...");
+    let pb = ProgressBar::new(HEIGHT as u64); 
+    let sty = ProgressStyle::with_template(
+        "[{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}",
+    ).unwrap();
+
+    pb.set_style(sty);
+
     for frame in 0..FRAMES {
-        pb.inc(1);
-        let mut file = File::create(format!("./data/{:03}.ppm", frame)).unwrap(); 
+        pb.set_message(format!("Frame {}/{}", frame + 1, FRAMES));
+        let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap(); 
         file.write_all(format!("P3\n{WIDTH} {HEIGHT}\n255\n").as_bytes()).unwrap();
         
         for j in (0..HEIGHT).rev() {
+            pb.inc(1);
             for i in 0..WIDTH {
                 let mut pixel_color = Color::new(0., 0., 0.); 
                 for _ in 0..samples_per_pixel {
@@ -86,7 +92,8 @@ fn main() {
                 write_color(pixel_color, samples_per_pixel, &mut file);
             }
         }
-        
+        pb.reset();
+
         let pos = (*moving_sphere).borrow_mut().center;
         (moving_sphere).borrow_mut().center = pos + Point3::new(0.016, 0., 0.);
 
