@@ -31,6 +31,13 @@ To add a new sphere, add a new element to the vector in the json:
 
 >The example above represents a Sphere with **center** at __[1.1, 0.0, -4.0]__, with a **radius** of __3.5__ and a **Metal material** with a certain **albedo** and **fuzziness**
 
+To sum up, this needs to be your directories configuration:
+```rust
+    _some_dir
+    ├── ray_tracer  // <- This is the executable file
+    └── _data 
+        └── // images will be generated here 
+```
 
 ## Static image rendering
 ![image](./image.jpeg)
