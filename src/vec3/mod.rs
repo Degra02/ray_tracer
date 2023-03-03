@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 pub mod functions;
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 pub struct Vec3 {
     e: [f64; 3],
 }

@@ -1,10 +1,10 @@
 #![allow(non_upper_case_globals)]
 
-use std::{cell::RefCell, rc::Rc, fs::File, io::Write, fmt::format};
+use std::{cell::RefCell, rc::Rc, fs::File, io::{Write, Read}, fmt::format};
 
 use rand::Rng;
 
-use crate::{vec3::{Color, Point3}, hittable::{hittable_list::HittableList, sphere::Sphere}, material::Material};
+use crate::{vec3::{Color, Point3}, hittable::{hittable_list::HittableList, sphere::Sphere, Hittable}, material::Material};
 
 const pi: f64 = std::f64::consts::PI as f64;
 const infinity: f64 = std::f64::INFINITY;
@@ -81,6 +81,22 @@ pub fn gen_random_spheres(world: &mut HittableList, n: i32) {
 }
 
 
+pub fn json_parser(world: &mut HittableList) {
+   let mut file = File::open("world.json").unwrap();
+   let mut to_parse = String::new(); 
+   let _res = file.read_to_string(&mut to_parse);
+   // println!("{}", to_parse);
+
+   let deserialized: Vec<Sphere> = serde_json::from_str(&to_parse).unwrap();
+   let mut vector = Vec::<Rc<RefCell<Sphere>>>::new(); 
+
+   for obj in deserialized {
+        vector.push(Rc::new(RefCell::new(obj)))
+   }
+
+   world.add_vec(vector);
+
+}
 
 
 

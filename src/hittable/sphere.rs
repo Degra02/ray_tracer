@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use super::HitRecord;
 use crate::material::Material;
 use crate::ray::Ray;
@@ -6,7 +8,7 @@ use crate::vec3::functions::dot;
 
 use super::Hittable;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,

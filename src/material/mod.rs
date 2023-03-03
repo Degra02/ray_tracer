@@ -1,9 +1,11 @@
 use std::cmp::min;
 
+use serde::{Serialize, Deserialize};
+
 use crate::{vec3::{Color, Vec3, functions::{reflect, unit_vec, dot, refract}}, hittable::HitRecord, ray::Ray, utils::random_float};
 
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Material {
     Lambertian {
         albedo: Color

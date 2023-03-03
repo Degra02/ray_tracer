@@ -5,6 +5,7 @@ use hittable::{HitRecord, Hittable};
 use indicatif::{ProgressBar, MultiProgress, ProgressStyle};
 use material::scatter;
 use ray::Ray;
+use utils::json_parser;
 use vec3::functions::{unit_vec, dot};
 
 use crate::{
@@ -19,10 +20,12 @@ mod utils;
 mod vec3;
 mod material;
 
+mod tests;
+
 pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
 pub const WIDTH: i32 = 400;
 pub const HEIGHT: i32 = (WIDTH as f64 / ASPECT_RATIO) as i32;
-pub const FRAMES: u32 = 60;
+pub const FRAMES: u32 = 1;
 
 fn main() {
     let samples_per_pixel = 100;
@@ -35,35 +38,8 @@ fn main() {
     let camera = Camera::new(look_from, look_at, vup, 50.0, ASPECT_RATIO);
 
     // World initialization
-    let material_ground = Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) };
-    let material_normal = Material::Lambertian { albedo: Color::new(0.7, 0.3, 0.3) };
-    let material_metal = Material::Metal { albedo: Color::new(0.4, 0.4, 0.4), fuzz: 0.1 };
-    let material_metal2 = Material::Metal { albedo: Color::new(0.4, 0.5, 1.0), fuzz: 0.4 };
-    let material_dielectric = Material::Dielectric { ir: 0.7 };
-
-    let mut moving_sphere = Rc::new(RefCell::new(Sphere::new(
-        Point3::new(-1., 0., -1.),
-        0.5,
-        material_metal2
-    )));
-
     let mut world = HittableList::default();
-    world.add(moving_sphere.clone());
-    world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(0., -100.5, -1.),
-        100.,
-        material_ground
-    ))));
-    world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(1.8, 0., -3.),
-        -0.5,
-        material_dielectric
-    ))));
-    world.add(Rc::new(RefCell::new(Sphere::new(
-        Point3::new(-1.1, 0.9, -1.),
-        0.2,
-        material_metal
-    ))));
+    json_parser(&mut world); 
 
     // Render
 
@@ -93,9 +69,6 @@ fn main() {
             }
         }
         pb.reset();
-
-        let pos = (*moving_sphere).borrow_mut().center;
-        (moving_sphere).borrow_mut().center = pos + Point3::new(0.016, 0., 0.);
 
     }
     pb.finish_with_message("Rendering complete!");

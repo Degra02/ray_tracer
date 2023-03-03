@@ -1,19 +1,25 @@
-use super::{HitRecord, Hittable};
+use super::{HitRecord, Hittable, sphere::Sphere};
 use crate::ray::Ray;
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Default)]
 pub struct HittableList {
-    objects: Vec<Rc<RefCell<dyn Hittable>>>,
+    objects: Vec<Rc<RefCell<Sphere>>>,
 }
 
 impl HittableList {
-    pub fn new(objects: Vec<Rc<RefCell<dyn Hittable>>>) -> Self {
+    pub fn new(objects: Vec<Rc<RefCell<Sphere>>>) -> Self {
         Self { objects }
     }
 
-    pub fn add(&mut self, object: Rc<RefCell<dyn Hittable>>) {
+    pub fn add(&mut self, object: Rc<RefCell<Sphere>>) {
         self.objects.push(object.clone());
+    }
+
+    pub fn add_vec(&mut self, vector: Vec<Rc<RefCell<Sphere>>>) {
+       for obj in vector {
+            self.objects.push(obj.clone())
+       } 
     }
 }
 
