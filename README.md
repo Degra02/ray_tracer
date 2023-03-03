@@ -36,7 +36,7 @@ To sum up, this needs to be your directories configuration:
     _some_dir
     ├── ray_tracer  // <- This is the executable file
     └── _data 
-        └── // images will be generated here 
+        └──         // images will be generated here 
 ```
 
 ## Static image rendering
