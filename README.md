@@ -3,7 +3,7 @@ Porting of a ray tracer in Rust.
 
 In order to use the program, either clone the repo and use 
 ```
-cargo run
+cargo run --release
 ```  
 or download the latest release and create a **data** folder in the same directory where you will execute the program.  
 
