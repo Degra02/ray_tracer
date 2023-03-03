@@ -1,6 +1,14 @@
 # Ray Tracer
 Porting of a ray tracer in Rust.
 
+In order to use the program, either clone the repo and use 
+```
+cargo run
+```  
+or download the latest release and create a **data** folder in the same directory where you will execute the program.  
+
+The renders will appear in the data directory under the name **XXXX.ppm**, where with a single image rendered it will always be 0000.ppm.
+
 ## World initialization
 Use the provided world.json as a template.
 To add a new sphere, add a new element to the vector in the json:
