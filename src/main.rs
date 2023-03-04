@@ -22,8 +22,8 @@ mod material;
 
 mod tests;
 
-pub const ASPECT_RATIO: f64 = 16.0 / 9.0;
-pub const WIDTH: i32 = 400;
+pub const ASPECT_RATIO: f64 = 1.0; //16.0 / 9.0;
+pub const WIDTH: i32 = 1024;
 pub const HEIGHT: i32 = (WIDTH as f64 / ASPECT_RATIO) as i32;
 pub const FRAMES: u32 = 1;
 
