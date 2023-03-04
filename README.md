@@ -35,6 +35,7 @@ To sum up, this needs to be your directories configuration:
 ```rust
     _some_dir
     ├── ray_tracer  // <- This is the executable file
+    ├── world.json
     └── _data 
         └──         // images will be generated here 
 ```
