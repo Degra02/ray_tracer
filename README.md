@@ -34,8 +34,8 @@ To add a new sphere, add a new element to the vector in the json:
 To sum up, this needs to be your directories configuration:
 ```rust
     _some_dir
-    ├── ray_tracer  // <- This is the executable file
-    ├── world.json
+    ├── ray_tracer  // This is the executable file
+    ├── state.json  // File that sets all the environment variables 
     └── _data 
         └──         // images will be generated here 
 ```

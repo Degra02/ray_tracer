@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 
-use crate::hittable::sphere::Sphere;
+use crate::{hittable::sphere::Sphere, camera::Camera, vec3::{Point3, Vec3, Color}, state::State};
 
 
 
@@ -41,7 +41,7 @@ pub fn test_serde() {
 
 
 #[test]
-pub fn test_serialization() {
+pub fn test_vec_serde() {
    let mut file = File::open("world.json").unwrap();
    let mut to_parse = String::new(); 
    let _res = file.read_to_string(&mut to_parse);
@@ -50,4 +50,50 @@ pub fn test_serialization() {
    let deserialized: Vec<Sphere> = serde_json::from_str(&to_parse).unwrap(); 
 
    println!("{:?}", deserialized);
+}
+
+#[test]
+pub fn camera_serde() {
+   let aspect_ratio = 1.0 / 9.0;
+
+   let look_from = Point3::new(0., 1., 1.);
+   let look_at = Point3::new(0., 0., -1.);
+   let vup = Vec3::new(0., 1., 0.);
+   let camera = Camera::new(look_from, look_at, vup, 50.0, aspect_ratio);
+
+   let camera_str = serde_json::to_string(&camera).unwrap(); 
+   println!("Camera Ser: {}", camera_str);
+
+   let camera_deser: Camera = serde_json::from_str(&camera_str).unwrap();
+   println!("Camera Deser: {:?}", camera_deser);
+}
+
+#[test]
+pub fn state_serde() {
+   let aspect_ratio = 16.0 / 9.0;
+   let width = 900u32;
+   let heigt: Option<i32> = None;
+   let frames = 1u32;
+     
+
+   let look_from = Point3::new(0., 1., 1.);
+   let look_at = Point3::new(0., 0., -1.);
+   let vup = Vec3::new(0., 1., 0.);
+   let camera = Camera::new(look_from, look_at, vup, 50.0, aspect_ratio);
+   
+   let sphere1 = Sphere::new(Point3::new(0., 0., 0.), 0.5, 
+   crate::material::Material::Metal { albedo: Color::new(1.0, 0.2, 0.2), fuzz: 1.0 });
+
+   let sphere2 = Sphere::new(Point3::new(0., 0., 0.), 0.5, 
+   crate::material::Material::Lambertian { albedo: Color::new(1.0, 0., 0.7)});
+
+   let entities_vec = vec![sphere1, sphere2];
+
+
+   let state = State::new(aspect_ratio, width, heigt, frames, camera, entities_vec);
+   let state_ser = serde_json::to_string(&state).unwrap();
+   println!("State Ser: {}", state_ser);
+
+   let state_deser: State = serde_json::from_str(&state_ser).unwrap();
+   println!("State Deser: {:?}", state_deser);
 }

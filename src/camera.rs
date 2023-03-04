@@ -1,5 +1,8 @@
-use crate::{vec3::{Point3, Vec3, functions::{unit_vec, cross}}, ray::Ray, ASPECT_RATIO, utils::deg_to_rad};
+use serde::{Serialize, Deserialize};
 
+use crate::{vec3::{Point3, Vec3, functions::{unit_vec, cross}}, ray::Ray, utils::deg_to_rad};
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Camera {
     origin: Point3,
     lower_left_corner: Point3,

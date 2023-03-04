@@ -8,7 +8,7 @@ use crate::vec3::functions::dot;
 
 use super::Hittable;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy)]
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,

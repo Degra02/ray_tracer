@@ -4,7 +4,7 @@ use std::{cell::RefCell, rc::Rc, fs::File, io::{Write, Read}, fmt::format};
 
 use rand::Rng;
 
-use crate::{vec3::{Color, Point3}, hittable::{hittable_list::HittableList, sphere::Sphere, Hittable}, material::Material};
+use crate::{vec3::{Color, Point3}, hittable::{hittable_list::HittableList, sphere::Sphere, Hittable}, material::Material, state::State};
 
 const pi: f64 = std::f64::consts::PI as f64;
 const infinity: f64 = std::f64::INFINITY;
@@ -75,27 +75,23 @@ pub fn gen_random_spheres(world: &mut HittableList, n: i32) {
                 _ => material = Material::Dielectric { ir: random_float_range(-0.7, 0.7)},
             }
             let sphere = Sphere::new(center, 0.2, material);
-            world.add(Rc::new(RefCell::new(sphere)));
+            world.add(sphere);
         }
     }
 }
 
 
-pub fn json_parser(world: &mut HittableList) {
-   let mut file = File::open("world.json").unwrap();
+pub fn json_parser(world: &mut HittableList) -> State {
+   let mut file = File::open("state.json").unwrap();
    let mut to_parse = String::new(); 
    let _res = file.read_to_string(&mut to_parse);
    // println!("{}", to_parse);
 
-   let deserialized: Vec<Sphere> = serde_json::from_str(&to_parse).unwrap();
-   let mut vector = Vec::<Rc<RefCell<Sphere>>>::new(); 
+   let state_deser: State = serde_json::from_str(&to_parse).unwrap();
 
-   for obj in deserialized {
-        vector.push(Rc::new(RefCell::new(obj)))
-   }
+   world.add_vec(state_deser.entities_vec.clone());
 
-   world.add_vec(vector);
-
+   state_deser
 }
 
 

@@ -10,7 +10,7 @@ use vec3::functions::{unit_vec, dot};
 
 use crate::{
     hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float, gen_random_spheres}, material::Material,
+    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float, gen_random_spheres}, material::Material, state::State,
 };
 
 mod camera;
@@ -19,49 +19,50 @@ mod ray;
 mod utils;
 mod vec3;
 mod material;
+mod state;
 
 mod tests;
 
-pub const ASPECT_RATIO: f64 = 1.0; //16.0 / 9.0;
-pub const WIDTH: i32 = 1024;
-pub const HEIGHT: i32 = (WIDTH as f64 / ASPECT_RATIO) as i32;
-pub const FRAMES: u32 = 1;
 
 fn main() {
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 150;
     let max_depth = 50;
 
     // Camera
     let look_from = Point3::new(0., 1., 1.);
     let look_at = Point3::new(0., 0., -1.);
     let vup = Vec3::new(0., 1., 0.);
-    let camera = Camera::new(look_from, look_at, vup, 50.0, ASPECT_RATIO);
 
     // World initialization
     let mut world = HittableList::default();
-    json_parser(&mut world); 
+    let state = State::from_json();
+
+    world.add_vec(state.entities_vec.clone());
+     
+    let camera = state.camera;
 
     // Render
 
-    let pb = ProgressBar::new(HEIGHT as u64); 
+    let pb = ProgressBar::new(state.height.unwrap() as u64); 
     let sty = ProgressStyle::with_template(
         "[{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}",
     ).unwrap();
 
     pb.set_style(sty);
 
-    for frame in 0..FRAMES {
-        pb.set_message(format!("Frame {}/{}", frame + 1, FRAMES));
+    for frame in 0..state.frames {
+        pb.set_message(format!("Frame {}/{}", frame + 1, state.frames));
         let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap(); 
-        file.write_all(format!("P3\n{WIDTH} {HEIGHT}\n255\n").as_bytes()).unwrap();
-        
-        for j in (0..HEIGHT).rev() {
+        file.write_all(format!("P3\n{} {}\n255\n",
+                                    state.width, state.height.unwrap()).as_bytes()).unwrap();
+            
+        for j in (0..state.height.unwrap()).rev() {
             pb.inc(1);
-            for i in 0..WIDTH {
+            for i in 0..state.width {
                 let mut pixel_color = Color::new(0., 0., 0.); 
                 for _ in 0..samples_per_pixel {
-                    let u = (i as f64 + random_float()) / (WIDTH - 1) as f64;
-                    let v = (j as f64 + random_float()) / (HEIGHT - 1) as f64;
+                    let u = (i as f64 + random_float()) / (state.width - 1) as f64;
+                    let v = (j as f64 + random_float()) / (state.height.unwrap() - 1) as f64;
                     let r = camera.get_ray(u, v);
                     pixel_color += ray_color(r, &mut world, max_depth);
                 }
