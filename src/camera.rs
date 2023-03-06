@@ -174,7 +174,7 @@ impl<'de> Deserialize<'de> for Camera {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["look_from", "look_at", "vup", "vfov", "aspect_ratio"];
+        const FIELDS: &[&str] = &["look_from", "look_at", "vup", "vfov", "aspect_ratio"];
         deserializer.deserialize_struct("Camera", FIELDS,CameraVisitor)
     }
 }

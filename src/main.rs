@@ -70,7 +70,7 @@ fn main() {
 
     let source_image_path = Path::new("data/0000.ppm");
     let target_image_path = Path::join(source_image_path.parent().unwrap(), "render.png");
-    let mut config = PNGConfig::new();
+    let config = PNGConfig::new();
     let input = ImageResource::from_path(source_image_path);
     let mut output = ImageResource::from_path(target_image_path);
     to_png(&mut output, &input, &config).unwrap()
