@@ -27,9 +27,6 @@ mod vec3;
 mod tests;
 
 fn main() {
-    let samples_per_pixel = 150;
-    let max_depth = 50;
-
     // World and Camera initialization
     let mut world = World::default();
     let state = State::from_json("state.json");
@@ -40,28 +37,28 @@ fn main() {
 
     // Render
 
-    let pb = ProgressBar::new(state.height.unwrap() as u64);
-    let sty = ProgressStyle::with_template("[{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}").unwrap();
+    let pb = ProgressBar::new(state.height as u64);
+    let sty = ProgressStyle::with_template("[{elapsed_precise}] [{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}").unwrap();
 
     pb.set_style(sty);
 
     for frame in 0..state.frames {
         pb.set_message(format!("Frame {}/{}", frame + 1, state.frames));
         let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap();
-        file.write_all(format!("P3\n{} {}\n255\n", state.width, state.height.unwrap()).as_bytes())
+        file.write_all(format!("P3\n{} {}\n255\n", state.width.unwrap(), state.height).as_bytes())
             .unwrap();
 
-        for j in (0..state.height.unwrap()).rev() {
+        for j in (0..state.height).rev() {
             pb.inc(1);
-            for i in 0..state.width {
+            for i in 0..state.width.unwrap() {
                 let mut pixel_color = Color::new(0., 0., 0.);
-                for _ in 0..samples_per_pixel {
-                    let u = (i as f64 + random_float()) / (state.width - 1) as f64;
-                    let v = (j as f64 + random_float()) / (state.height.unwrap() - 1) as f64;
+                for _ in 0..state.samples_per_pixel {
+                    let u = (i as f64 + random_float()) / (state.width.unwrap() - 1) as f64;
+                    let v = (j as f64 + random_float()) / (state.height - 1) as f64;
                     let r = camera.get_ray(u, v);
-                    pixel_color += ray_color(r, &mut world, max_depth);
+                    pixel_color += ray_color(r, &mut world, state.max_depth);
                 }
-                write_color(pixel_color, samples_per_pixel, &mut file);
+                write_color(pixel_color, state.samples_per_pixel, &mut file);
             }
         }
         pb.reset();

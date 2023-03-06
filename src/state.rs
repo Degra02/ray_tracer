@@ -6,10 +6,12 @@ use crate::{camera::Camera, hittable::sphere::Sphere};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct State {
+    pub samples_per_pixel: i32,
+    pub max_depth: i32,
     pub aspect_ratio: f64,
-    pub width: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub height: Option<i32>,
+    pub width: Option<i32>, 
+    pub height: u32,
     pub frames: u32,
 
     pub camera: Camera,
@@ -18,14 +20,18 @@ pub struct State {
 
 impl State {
     pub fn new(
+        samples_per_pixel: i32,
+        max_depth: i32,
         aspect_ratio: f64,
-        width: u32,
-        height: Option<i32>,
+        width: Option<i32>,
+        height: u32,
         frames: u32,
         camera: Camera,
         entities_vec: Vec<Sphere>,
     ) -> Self {
         Self {
+            samples_per_pixel,
+            max_depth,
             aspect_ratio,
             width,
             height,
@@ -43,8 +49,8 @@ impl State {
 
         let mut state: State = serde_json::from_str(&to_parse).unwrap();
 
-        if state.height.is_none() {
-            state.height = Some((state.width as f64 / state.aspect_ratio) as i32);
+        if state.width.is_none() {
+            state.width = Some((state.height as f64 * state.aspect_ratio) as i32);
         }
 
         state

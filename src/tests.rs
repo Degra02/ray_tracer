@@ -74,8 +74,8 @@ pub fn camera_serde() {
 #[test]
 pub fn state_serde() {
     let aspect_ratio = 16.0 / 9.0;
-    let width = 900u32;
-    let heigt: Option<i32> = None;
+    let height = 900u32;
+    let width: Option<i32> = None;
     let frames = 1u32;
 
     let look_from = Point3::new(0., 1., 1.);
@@ -102,7 +102,7 @@ pub fn state_serde() {
 
     let entities_vec = vec![sphere1, sphere2];
 
-    let state = State::new(aspect_ratio, width, heigt, frames, camera, entities_vec);
+    let state = State::new(100, 50, aspect_ratio, width, height, frames, camera, entities_vec);
     let state_ser = serde_json::to_string(&state).unwrap();
     println!("State Ser: {}", state_ser);
 
