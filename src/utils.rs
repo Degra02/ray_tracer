@@ -1,27 +1,24 @@
 #![allow(non_upper_case_globals)]
 
 use std::{
-    cell::RefCell,
-    fmt::format,
     fs::File,
     io::{Read, Write},
-    rc::Rc,
 };
 
 use rand::Rng;
 
 use crate::{
-    hittable::{hittable_list::HittableList, sphere::Sphere, Hittable},
+    hittable::{hittable_list::HittableList, sphere::Sphere},
     material::Material,
     state::State,
     vec3::{Color, Point3},
 };
 
-const pi: f64 = std::f64::consts::PI as f64;
+const pi: f64 = std::f64::consts::PI;
 const infinity: f64 = std::f64::INFINITY;
 
 pub fn deg_to_rad(deg: f64) -> f64 {
-    (deg as f64 * std::f64::consts::PI / 180.0) as f64
+    deg * std::f64::consts::PI / 180.0
 }
 
 pub fn random_float() -> f64 {

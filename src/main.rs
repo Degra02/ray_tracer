@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::{f64::INFINITY, fs::File, io::Write, rc::Rc};
+use std::{f64::INFINITY, fs::File, io::Write};
 
 use hittable::{HitRecord, Hittable};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -8,12 +8,10 @@ use ray::Ray;
 use vec3::functions::{dot, unit_vec};
 
 use crate::{
-    camera::Camera,
-    hittable::{hittable_list::HittableList, sphere::Sphere},
-    material::Material,
+    hittable::{hittable_list::HittableList},
     state::State,
-    utils::{gen_random_spheres, random_float, write_color},
-    vec3::{Color, Point3, Vec3},
+    utils::{random_float, write_color},
+    vec3::{Color, Point3},
 };
 
 mod camera;

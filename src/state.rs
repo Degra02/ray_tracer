@@ -3,7 +3,7 @@ use std::{fs::File, io::Read};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    camera::{self, Camera},
+    camera::{Camera},
     hittable::sphere::Sphere,
 };
 

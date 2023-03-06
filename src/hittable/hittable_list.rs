@@ -1,6 +1,6 @@
 use super::{sphere::Sphere, HitRecord, Hittable};
 use crate::ray::Ray;
-use std::{cell::RefCell, rc::Rc};
+
 
 #[derive(Default)]
 pub struct HittableList {

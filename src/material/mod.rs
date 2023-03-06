@@ -1,4 +1,4 @@
-use std::cmp::min;
+
 
 use serde::{Deserialize, Serialize};
 
@@ -56,7 +56,7 @@ pub fn scatter(
             }
             *scattered = Ray::new(rec.p, scatter_direction);
             *attenuation = albedo;
-            return true;
+            true
         }
         Material::Metal { albedo, fuzz } => {
             let reflected = reflect(unit_vec(ray_in.dir()), rec.normal);
@@ -65,7 +65,7 @@ pub fn scatter(
                 reflected + fuzz * Vec3::random_in_hemisphere(rec.normal),
             );
             *attenuation = albedo;
-            return dot(scattered.dir(), rec.normal) > 0.;
+            dot(scattered.dir(), rec.normal) > 0.
         }
         Material::Dielectric { ir } => {
             *attenuation = Color::new(1., 1., 1.);
