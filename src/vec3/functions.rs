@@ -4,7 +4,7 @@ use fast_inv_sqrt::InvSqrt64;
 
 use crate::utils::{random_float, random_float_range};
 
-use super::{Vec3, Point3};
+use super::{Point3, Vec3};
 use std::fmt::Display;
 
 impl Vec3 {
@@ -13,7 +13,7 @@ impl Vec3 {
     }
 
     pub fn norm(&self) -> f64 {
-        1.0 / (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt64() 
+        1.0 / (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt64()
         // f64::sqrt(self[0] * self[0] + self[1] * self[1] + self[2] * self[2])
     }
 
@@ -38,9 +38,13 @@ impl Vec3 {
     }
 
     pub fn random_range(min: f64, max: f64) -> Self {
-        Self::new(random_float_range(min, max), random_float_range(min, max), random_float_range(min, max))
+        Self::new(
+            random_float_range(min, max),
+            random_float_range(min, max),
+            random_float_range(min, max),
+        )
     }
-    
+
     pub fn random_in_unit_sphere() -> Self {
         loop {
             let p = Vec3::random_range(-1., 1.);
@@ -85,7 +89,7 @@ pub fn cross(v1: Vec3, v2: Vec3) -> Vec3 {
 
 pub fn unit_vec(vec: Vec3) -> Vec3 {
     // vec / vec.norm()
-    vec * (vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]).inv_sqrt64()
+    vec * (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]).inv_sqrt64()
 }
 
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
@@ -94,7 +98,7 @@ pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
 
 pub fn refract(uv: Vec3, n: Vec3, etai_over_eta: f64) -> Vec3 {
     let cos_theta = f64::min(dot(-uv, n), 1.0);
-    let r_out_perp = etai_over_eta * (uv + cos_theta*n);
+    let r_out_perp = etai_over_eta * (uv + cos_theta * n);
     let r_out_parallel = -f64::sqrt((1.0 - r_out_perp.norm_squared()).abs()) * n;
 
     r_out_perp + r_out_parallel
@@ -124,11 +128,7 @@ impl std::ops::Add for Vec3 {
     type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Vec3::new(
-            self[0] + rhs[0],
-            self[1] + rhs[1],
-            self[2] + rhs[2],
-        )
+        Vec3::new(self[0] + rhs[0], self[1] + rhs[1], self[2] + rhs[2])
     }
 }
 

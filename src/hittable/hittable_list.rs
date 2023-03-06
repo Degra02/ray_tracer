@@ -1,4 +1,4 @@
-use super::{HitRecord, Hittable, sphere::Sphere};
+use super::{sphere::Sphere, HitRecord, Hittable};
 use crate::ray::Ray;
 use std::{cell::RefCell, rc::Rc};
 
@@ -17,9 +17,9 @@ impl HittableList {
     }
 
     pub fn add_vec(&mut self, vector: Vec<Sphere>) {
-       for obj in vector {
+        for obj in vector {
             self.objects.push(obj)
-       } 
+        }
     }
 }
 

@@ -1,65 +1,61 @@
 #![allow(dead_code)]
-use std::{cell::RefCell, f64::INFINITY, rc::Rc, fs::File, io::Write};
+use std::{f64::INFINITY, fs::File, io::Write, rc::Rc};
 
 use hittable::{HitRecord, Hittable};
-use indicatif::{ProgressBar, MultiProgress, ProgressStyle};
+use indicatif::{ProgressBar, ProgressStyle};
 use material::scatter;
 use ray::Ray;
-use utils::json_parser;
-use vec3::functions::{unit_vec, dot};
+use vec3::functions::{dot, unit_vec};
 
 use crate::{
+    camera::Camera,
     hittable::{hittable_list::HittableList, sphere::Sphere},
-    vec3::{Color, Point3, Vec3}, camera::Camera, utils::{write_color, random_float, gen_random_spheres}, material::Material, state::State,
+    material::Material,
+    state::State,
+    utils::{gen_random_spheres, random_float, write_color},
+    vec3::{Color, Point3, Vec3},
 };
 
 mod camera;
 mod hittable;
+mod material;
 mod ray;
+mod state;
 mod utils;
 mod vec3;
-mod material;
-mod state;
 
+#[cfg(test)]
 mod tests;
-
 
 fn main() {
     let samples_per_pixel = 150;
     let max_depth = 50;
 
-    // Camera
-    let look_from = Point3::new(0., 1., 1.);
-    let look_at = Point3::new(0., 0., -1.);
-    let vup = Vec3::new(0., 1., 0.);
-
-    // World initialization
+    // World and Camera initialization
     let mut world = HittableList::default();
-    let state = State::from_json();
+    let state = State::from_json("state.json");
 
     world.add_vec(state.entities_vec.clone());
-     
+
     let camera = state.camera;
 
     // Render
 
-    let pb = ProgressBar::new(state.height.unwrap() as u64); 
-    let sty = ProgressStyle::with_template(
-        "[{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}",
-    ).unwrap();
+    let pb = ProgressBar::new(state.height.unwrap() as u64);
+    let sty = ProgressStyle::with_template("[{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}").unwrap();
 
     pb.set_style(sty);
 
     for frame in 0..state.frames {
         pb.set_message(format!("Frame {}/{}", frame + 1, state.frames));
-        let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap(); 
-        file.write_all(format!("P3\n{} {}\n255\n",
-                                    state.width, state.height.unwrap()).as_bytes()).unwrap();
-            
+        let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap();
+        file.write_all(format!("P3\n{} {}\n255\n", state.width, state.height.unwrap()).as_bytes())
+            .unwrap();
+
         for j in (0..state.height.unwrap()).rev() {
             pb.inc(1);
             for i in 0..state.width {
-                let mut pixel_color = Color::new(0., 0., 0.); 
+                let mut pixel_color = Color::new(0., 0., 0.);
                 for _ in 0..samples_per_pixel {
                     let u = (i as f64 + random_float()) / (state.width - 1) as f64;
                     let v = (j as f64 + random_float()) / (state.height.unwrap() - 1) as f64;
@@ -70,7 +66,6 @@ fn main() {
             }
         }
         pb.reset();
-
     }
     pb.finish_with_message("Rendering complete!");
 }
@@ -79,7 +74,7 @@ pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
     let mut rec = HitRecord::default();
 
     if depth <= 0 {
-       return Color::new(0., 0., 0.) 
+        return Color::new(0., 0., 0.);
     }
 
     if world.hit(ray, 0.0001, INFINITY, &mut rec) {
@@ -87,9 +82,9 @@ pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
         let mut scattered: Ray = Ray::default();
         let mut attenuation: Color = Color::default();
         if scatter(rec.material, ray, rec, &mut attenuation, &mut scattered) {
-            return attenuation * ray_color(scattered, world, depth-1);
+            return attenuation * ray_color(scattered, world, depth - 1);
         }
-        return Color::new(0., 0., 0.)
+        return Color::new(0., 0., 0.);
     }
     let unit_direction = unit_vec(ray.dir());
     let t = 0.5 * (unit_direction[1] + 1.0);

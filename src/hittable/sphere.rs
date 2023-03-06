@@ -1,10 +1,10 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::HitRecord;
 use crate::material::Material;
 use crate::ray::Ray;
-use crate::vec3::Point3;
 use crate::vec3::functions::dot;
+use crate::vec3::Point3;
 
 use super::Hittable;
 
@@ -12,12 +12,16 @@ use super::Hittable;
 pub struct Sphere {
     pub center: Point3,
     pub radius: f64,
-    pub material: Material
+    pub material: Material,
 }
 
 impl Sphere {
     pub fn new(center: Point3, radius: f64, material: Material) -> Self {
-        Self { center, radius, material}
+        Self {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
