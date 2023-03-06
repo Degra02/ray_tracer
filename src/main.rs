@@ -9,7 +9,7 @@ use ray::Ray;
 use vec3::functions::{dot, unit_vec};
 
 use crate::{
-    hittable::hittable_list::HittableList,
+    hittable::world::World,
     state::State,
     utils::{random_float, write_color},
     vec3::{Color, Point3},
@@ -31,7 +31,7 @@ fn main() {
     let max_depth = 50;
 
     // World and Camera initialization
-    let mut world = HittableList::default();
+    let mut world = World::default();
     let state = State::from_json("state.json");
 
     world.add_vec(state.entities_vec.clone());

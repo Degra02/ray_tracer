@@ -1,4 +1,4 @@
-pub mod hittable_list;
+pub mod world;
 pub mod sphere;
 
 // use std::{cell::RefCell, rc::Rc};

@@ -2,11 +2,11 @@ use super::{sphere::Sphere, HitRecord, Hittable};
 use crate::ray::Ray;
 
 #[derive(Default)]
-pub struct HittableList {
+pub struct World {
     objects: Vec<Sphere>,
 }
 
-impl HittableList {
+impl World {
     pub fn new(objects: Vec<Sphere>) -> Self {
         Self { objects }
     }
@@ -22,7 +22,7 @@ impl HittableList {
     }
 }
 
-impl Hittable for HittableList {
+impl Hittable for World {
     fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let mut tmp_rec = HitRecord::default();
         let mut hit_anything = false;

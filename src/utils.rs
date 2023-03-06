@@ -8,7 +8,7 @@ use std::{
 use rand::Rng;
 
 use crate::{
-    hittable::{hittable_list::HittableList, sphere::Sphere},
+    hittable::{world::World, sphere::Sphere},
     material::Material,
     state::State,
     vec3::{Color, Point3},
@@ -71,7 +71,7 @@ pub fn write_color(pixel_color: Color, samples_per_pixel: i32, file: &mut File) 
     // )
 }
 
-pub fn gen_random_spheres(world: &mut HittableList, n: i32) {
+pub fn gen_random_spheres(world: &mut World, n: i32) {
     for x in -n..n {
         for z in -n..n {
             let albedo = Color::new(random_float(), random_float(), random_float());
@@ -95,7 +95,7 @@ pub fn gen_random_spheres(world: &mut HittableList, n: i32) {
     }
 }
 
-pub fn json_parser(world: &mut HittableList) -> State {
+pub fn json_parser(world: &mut World) -> State {
     let mut file = File::open("state.json").unwrap();
     let mut to_parse = String::new();
     let _res = file.read_to_string(&mut to_parse);
