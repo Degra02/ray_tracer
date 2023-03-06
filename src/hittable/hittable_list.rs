@@ -1,7 +1,6 @@
 use super::{sphere::Sphere, HitRecord, Hittable};
 use crate::ray::Ray;
 
-
 #[derive(Default)]
 pub struct HittableList {
     objects: Vec<Sphere>,

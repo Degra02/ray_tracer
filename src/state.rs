@@ -2,10 +2,7 @@ use std::{fs::File, io::Read};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    camera::{Camera},
-    hittable::sphere::Sphere,
-};
+use crate::{camera::Camera, hittable::sphere::Sphere};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct State {

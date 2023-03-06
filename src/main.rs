@@ -1,14 +1,15 @@
 #![allow(dead_code)]
-use std::{f64::INFINITY, fs::File, io::Write};
+use std::{f64::INFINITY, fs::File, io::Write, path::Path};
 
 use hittable::{HitRecord, Hittable};
+use image_convert::{to_png, ImageResource, PNGConfig};
 use indicatif::{ProgressBar, ProgressStyle};
 use material::scatter;
 use ray::Ray;
 use vec3::functions::{dot, unit_vec};
 
 use crate::{
-    hittable::{hittable_list::HittableList},
+    hittable::hittable_list::HittableList,
     state::State,
     utils::{random_float, write_color},
     vec3::{Color, Point3},
@@ -66,6 +67,13 @@ fn main() {
         pb.reset();
     }
     pb.finish_with_message("Rendering complete!");
+
+    let source_image_path = Path::new("data/0000.ppm");
+    let target_image_path = Path::join(source_image_path.parent().unwrap(), "render.png");
+    let mut config = PNGConfig::new();
+    let input = ImageResource::from_path(source_image_path);
+    let mut output = ImageResource::from_path(target_image_path);
+    to_png(&mut output, &input, &config).unwrap()
 }
 
 pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {

@@ -4,7 +4,7 @@ use fast_inv_sqrt::InvSqrt64;
 
 use crate::utils::{random_float, random_float_range};
 
-use super::{Vec3};
+use super::Vec3;
 use std::fmt::Display;
 
 impl Vec3 {
