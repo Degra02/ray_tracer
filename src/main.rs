@@ -39,20 +39,23 @@ fn main() {
 
     let pb = ProgressBar::new(state.height as u64);
     let sty = ProgressStyle::with_template(
-        "[{elapsed_precise}] [{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}",
+        "[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]",
     )
     .unwrap();
 
     pb.set_style(sty);
 
     for frame in 0..state.frames {
-        pb.set_message(format!("Frame {}/{}", frame + 1, state.frames));
+        if state.frames > 1 {
+           pb.set_prefix(format!("[Frame {}/{}]", frame + 1, state.frames)); 
+        }
         let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap();
         file.write_all(format!("P3\n{} {}\n255\n", state.width.unwrap(), state.height).as_bytes())
             .unwrap();
 
         for j in (0..state.height).rev() {
             pb.inc(1);
+            pb.set_message(format!("{:.3}%", (state.height - j) * 100 / state.height));
             for i in 0..state.width.unwrap() {
                 let mut pixel_color = Color::new(0., 0., 0.);
                 for _ in 0..state.samples_per_pixel {
