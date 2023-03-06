@@ -38,7 +38,10 @@ fn main() {
     // Render
 
     let pb = ProgressBar::new(state.height as u64);
-    let sty = ProgressStyle::with_template("[{elapsed_precise}] [{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}").unwrap();
+    let sty = ProgressStyle::with_template(
+        "[{elapsed_precise}] [{msg}] {bar:40.cyan/blue} {pos:>7}/{len:7}",
+    )
+    .unwrap();
 
     pb.set_style(sty);
 
@@ -65,12 +68,14 @@ fn main() {
     }
     pb.finish_with_message("Rendering complete!");
 
-    let source_image_path = Path::new("data/0000.ppm");
-    let target_image_path = Path::join(source_image_path.parent().unwrap(), "render.png");
-    let config = PNGConfig::new();
-    let input = ImageResource::from_path(source_image_path);
-    let mut output = ImageResource::from_path(target_image_path);
-    to_png(&mut output, &input, &config).unwrap()
+    if state.frames == 1 {
+        let source_image_path = Path::new("data/0000.ppm");
+        let target_image_path = Path::join(source_image_path.parent().unwrap(), "render.png");
+        let config = PNGConfig::new();
+        let input = ImageResource::from_path(source_image_path);
+        let mut output = ImageResource::from_path(target_image_path);
+        to_png(&mut output, &input, &config).unwrap()
+    }
 }
 
 pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {

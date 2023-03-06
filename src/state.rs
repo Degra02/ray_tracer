@@ -10,7 +10,7 @@ pub struct State {
     pub max_depth: i32,
     pub aspect_ratio: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub width: Option<i32>, 
+    pub width: Option<i32>,
     pub height: u32,
     pub frames: u32,
 

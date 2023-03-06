@@ -102,7 +102,16 @@ pub fn state_serde() {
 
     let entities_vec = vec![sphere1, sphere2];
 
-    let state = State::new(100, 50, aspect_ratio, width, height, frames, camera, entities_vec);
+    let state = State::new(
+        100,
+        50,
+        aspect_ratio,
+        width,
+        height,
+        frames,
+        camera,
+        entities_vec,
+    );
     let state_ser = serde_json::to_string(&state).unwrap();
     println!("State Ser: {}", state_ser);
 

@@ -8,7 +8,7 @@ use std::{
 use rand::Rng;
 
 use crate::{
-    hittable::{world::World, sphere::Sphere},
+    hittable::{sphere::Sphere, world::World},
     material::Material,
     state::State,
     vec3::{Color, Point3},
