@@ -60,7 +60,7 @@ impl<'de> Deserialize<'de> for Camera {
     where
         D: serde::Deserializer<'de> {
 
-        enum Field { look_from, look_at, vup, vfov, aspect_ratio }
+        enum Field { LookFrom, LookAt, Vup, Vfov, AspectRatio }
 
         impl<'de> Deserialize<'de> for Field {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -78,11 +78,11 @@ impl<'de> Deserialize<'de> for Camera {
                     fn visit_str<E>(self, value: &str) -> Result<Field, E> 
                     where E: de::Error {
                        match value {
-                           "look_from" => Ok(Field::look_from),
-                           "look_at" => Ok(Field::look_at),
-                           "vup" => Ok(Field::vup),
-                           "vfov" => Ok(Field::vfov),
-                           "aspect_ratio" => Ok(Field::aspect_ratio),
+                           "look_from" => Ok(Field::LookFrom),
+                           "look_at" => Ok(Field::LookAt),
+                           "vup" => Ok(Field::Vup),
+                           "vfov" => Ok(Field::Vfov),
+                           "aspect_ratio" => Ok(Field::AspectRatio),
                            _ => Err(de::Error::unknown_field(value, FIELDS)) 
                        } 
                     }
@@ -130,34 +130,34 @@ impl<'de> Deserialize<'de> for Camera {
                 let mut aspect_ratio = None;
                 while let Some(key) = map.next_key()? {
                     match key {
-                        Field::look_at => {
+                        Field::LookAt => {
                             if look_at.is_some() {
                                 return Err(de::Error::duplicate_field("secs"));
                             }
                             look_at = Some(map.next_value()?);
                         }
-                        Field::look_from => {
+                        Field::LookFrom => {
                             if look_from.is_some() {
                                 return Err(de::Error::duplicate_field("nanos"));
                             }
                             look_from = Some(map.next_value()?);
                         }
                         
-                        Field::vup => {
+                        Field::Vup => {
                             if vup.is_some() {
                                 return Err(de::Error::duplicate_field("nanos"));
                             }
                             vup = Some(map.next_value()?);
                         }
                         
-                        Field::vfov => {
+                        Field::Vfov => {
                             if vfov.is_some() {
                                 return Err(de::Error::duplicate_field("nanos"));
                             }
                             vfov = Some(map.next_value()?);
                         }
                         
-                        Field::aspect_ratio => {
+                        Field::AspectRatio => {
                             if aspect_ratio.is_some() {
                                 return Err(de::Error::duplicate_field("nanos"));
                             }
