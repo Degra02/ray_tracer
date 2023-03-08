@@ -35,13 +35,13 @@ pub trait Hittable {
 
 pub fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
     let mut closest_so_far = t_max;
-    let rec = HitRecord::default();
+    let mut rec = HitRecord::default();
 
-    for obj in self.objects.iter() {
-        if obj.hit(r, t_min, closest_so_far, &mut rec) {
-            closest_so_far = tmp_rec.clone().t;
+    for obj in world.iter() {
+        if obj.hit(r.clone(), t_min, closest_so_far, &mut rec) {
+            closest_so_far = rec.clone().t;
         }
     }
 
-    Some(tmp_rec)
+    Some(rec)
 }
