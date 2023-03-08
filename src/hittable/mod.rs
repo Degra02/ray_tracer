@@ -9,6 +9,8 @@ use crate::{
     vec3::{functions::dot, Point3, Vec3},
 };
 
+use self::sphere::Sphere;
+
 #[derive(Clone, Default)]
 pub struct HitRecord {
     pub p: Point3,
@@ -29,4 +31,17 @@ impl HitRecord {
 
 pub trait Hittable {
     fn hit(&self, r: Ray, t_min: f64, t_max: f64, hit_record: &mut HitRecord) -> bool;
+}
+
+pub fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    let mut closest_so_far = t_max;
+    let rec = HitRecord::default();
+
+    for obj in self.objects.iter() {
+        if obj.hit(r, t_min, closest_so_far, &mut rec) {
+            closest_so_far = tmp_rec.clone().t;
+        }
+    }
+
+    Some(tmp_rec)
 }

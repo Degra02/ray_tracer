@@ -6,6 +6,7 @@ use image_convert::{to_png, ImageResource, PNGConfig};
 use indicatif::{ProgressBar, ProgressStyle};
 use material::scatter;
 use ray::Ray;
+use renderer::ray_color;
 use vec3::functions::{dot, unit_vec};
 
 use crate::{
@@ -19,6 +20,7 @@ mod camera;
 mod hittable;
 mod material;
 mod ray;
+mod renderer;
 mod state;
 mod utils;
 mod vec3;
@@ -38,16 +40,15 @@ fn main() {
     // Render
 
     let pb = ProgressBar::new(state.height as u64);
-    let sty = ProgressStyle::with_template(
-        "[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]",
-    )
-    .unwrap();
+    let sty =
+        ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]")
+            .unwrap();
 
     pb.set_style(sty);
 
     for frame in 0..state.frames {
         if state.frames > 1 {
-           pb.set_prefix(format!("[Frame {}/{}]", frame + 1, state.frames)); 
+            pb.set_prefix(format!("[Frame {}/{}]", frame + 1, state.frames));
         }
         let mut file = File::create(format!("./data/{:04}.ppm", frame)).unwrap();
         file.write_all(format!("P3\n{} {}\n255\n", state.width.unwrap(), state.height).as_bytes())
@@ -78,39 +79,5 @@ fn main() {
         let input = ImageResource::from_path(source_image_path);
         let mut output = ImageResource::from_path(target_image_path);
         to_png(&mut output, &input, &config).unwrap()
-    }
-}
-
-pub fn ray_color(ray: Ray, world: &mut dyn Hittable, depth: i32) -> Color {
-    let mut rec = HitRecord::default();
-
-    if depth <= 0 {
-        return Color::new(0., 0., 0.);
-    }
-
-    if world.hit(ray, 0.0001, INFINITY, &mut rec) {
-        // let target: Point3 = rec.p + rec.normal + Vec3::random_unit_vector();
-        let mut scattered: Ray = Ray::default();
-        let mut attenuation: Color = Color::default();
-        if scatter(rec.material, ray, rec, &mut attenuation, &mut scattered) {
-            return attenuation * ray_color(scattered, world, depth - 1);
-        }
-        return Color::new(0., 0., 0.);
-    }
-    let unit_direction = unit_vec(ray.dir());
-    let t = 0.5 * (unit_direction[1] + 1.0);
-    (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.7, 0.7, 1.0)
-}
-
-pub fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
-    let oc = ray.origin() - center;
-    let a = ray.dir().norm_squared();
-    let half_b = dot(oc, ray.dir());
-    let c = oc.norm_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        -1.
-    } else {
-        (-half_b - f64::sqrt(discriminant)) / a
     }
 }
