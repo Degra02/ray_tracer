@@ -1,9 +1,8 @@
 [package]
+authors = ["Degra"]
 name = "ray_tracer"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 fast_inv_sqrt = { version = "1.0.1", features = ["omit-checking"] }

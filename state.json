@@ -2,7 +2,7 @@
   "samples_per_pixel": 150,
   "max_depth": 50,
   "aspect_ratio": 1.7777777,
-  "height": 400,
+  "height": 1080,
   "frames": 1,
   "camera": {
     "look_from": { "e": [0.0, 1.0, 1.0]},
