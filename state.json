@@ -2,7 +2,7 @@
   "samples_per_pixel": 150,
   "max_depth": 50,
   "aspect_ratio": 1.7777777,
-  "height": 1080,
+  "height": 400,
   "frames": 1,
   "camera": {
     "look_from": { "e": [0.0, 1.0, 1.0]},
@@ -47,7 +47,7 @@
       "material": {
         "Metal": {
           "albedo": {
-            "e": [0.1, 1.0, 1.0]
+            "e": [0.3, 0.3, 0.3]
           },
           "fuzz": 0.1
         }
@@ -73,12 +73,10 @@
       },
       "radius": 0.5,
       "material": {
-        "Lambertian": {
-          "albedo": {
-            "e": [0.8, 0.3, 0.1]
-          }
+        "Dielectric": {
+          "ir": 0.1
         }
       }
-    }
+      }
   ]
 }

@@ -15,6 +15,7 @@ pub enum Material {
     Lambertian { albedo: Color },
     Metal { albedo: Color, fuzz: f64 },
     Dielectric { ir: f64 },
+    Light {}
 }
 
 impl Default for Material {
@@ -85,6 +86,10 @@ pub fn scatter(
 
             *scattered = Ray::new(rec.p, direction);
             true
+        }
+        Material::Light { } => {
+           *attenuation = Color::new(1., 1., 1.);
+           true 
         }
     }
 }
