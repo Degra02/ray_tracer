@@ -42,5 +42,5 @@ fn main() {
         ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]")
             .unwrap();
 
-        render(state);
+    render(state);
 }
