@@ -19,9 +19,7 @@
       "radius": 100.0,
       "material": {
         "Lambertian": {
-          "albedo": {
-            "e": [0.8, 0.8, 0.0]
-          }
+          "albedo": [0.8, 0.8, 0.0]
         }
       }
     },
@@ -32,9 +30,7 @@
       "radius": 0.5,
       "material": {
         "Metal": {
-          "albedo": {
-            "e": [0.4, 0.5, 1.0]
-          },
+          "albedo": [0.4, 0.5, 1.0],
           "fuzz": 0.7
         }
       }
@@ -46,9 +42,7 @@
       "radius": 0.5,
       "material": {
         "Metal": {
-          "albedo": {
-            "e": [0.3, 0.3, 0.3]
-          },
+          "albedo": [0.3, 0.3, 0.3],
           "fuzz": 0.1
         }
       }
@@ -60,23 +54,10 @@
       "radius": 2.5,
       "material": {
         "Metal": {
-          "albedo": {
-            "e": [0.4, 1.0, 1.0]
-          },
+          "albedo": [0.4, 1.0, 1.0],
           "fuzz": 0.1
         }
       }
-    },
-    {
-      "center": {
-        "e": [1.0, 0.0, -1.0]
-      },
-      "radius": 0.5,
-      "material": {
-        "Dielectric": {
-          "ir": 0.1
-        }
-      }
-      }
+    }
   ]
 }

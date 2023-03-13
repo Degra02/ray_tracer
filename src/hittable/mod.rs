@@ -1,5 +1,4 @@
 pub mod sphere;
-pub mod world;
 
 // use std::{cell::RefCell, rc::Rc};
 
@@ -30,18 +29,19 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, r: Ray, t_min: f64, t_max: f64, hit_record: &mut HitRecord) -> bool;
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 pub fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
     let mut closest_so_far = t_max;
-    let mut rec = HitRecord::default();
+    let mut hit_record = None;
 
     for obj in world.iter() {
-        if obj.hit(r.clone(), t_min, closest_so_far, &mut rec) {
-            closest_so_far = rec.clone().t;
+        if let Some(hit) = obj.hit(r, t_min, closest_so_far) {
+            closest_so_far = hit.t;
+            hit_record = Some(hit);
         }
     }
 
-    Some(rec)
+    hit_record
 }

@@ -1,19 +1,9 @@
 #![allow(dead_code)]
-use std::{f64::INFINITY, fs::File, io::Write, path::Path};
 
-use hittable::{HitRecord, Hittable};
-use image_convert::{to_png, ImageResource, PNGConfig};
 use indicatif::{ProgressBar, ProgressStyle};
-use material::scatter;
-use ray::Ray;
-use renderer::{ray_color, render};
-use vec3::functions::{dot, unit_vec};
-
+use renderer::render;
 use crate::{
-    hittable::world::World,
-    state::State,
-    utils::{random_float, write_color},
-    vec3::{Color, Point3},
+    state::State
 };
 
 mod camera;
@@ -30,10 +20,7 @@ mod tests;
 
 fn main() {
     // World and Camera initialization
-    let mut world = World::default();
     let state = State::from_json("state.json");
-
-    world.add_vec(state.entities_vec.clone());
 
     // Render
 

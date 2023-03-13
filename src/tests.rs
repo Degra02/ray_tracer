@@ -1,17 +1,19 @@
 use std::{fs::File, io::Read};
 
+use palette::Srgb;
+
 use crate::{
     camera::Camera,
     hittable::sphere::Sphere,
     state::State,
-    vec3::{Color, Point3, Vec3},
+    vec3::{Color, Point3, Vec3}, material::{Metal, Lambertian},
 };
 
 #[test]
 pub fn test_serde() {
     use crate::{
         material::Material,
-        vec3::{Color, Point3},
+        vec3::{Point3},
     };
 
     let vec = vec![Point3::new(0., 0., 0.), Point3::new(1., 1., 0.)];
@@ -27,7 +29,7 @@ pub fn test_serde() {
     println!("Deserialized Point3: {:?}", deserialized);
 
     // Material
-    let material = Material::new_metal(Color::new(0.1, 0.8, 0.3), 0.7);
+    let material = Material::new_metal(Srgb::new(0.1, 0.8, 0.3), 0.7);
     let ser_mat = serde_json::to_string(&material).unwrap();
     println!("Ser Mat: {}", ser_mat);
 
@@ -86,18 +88,18 @@ pub fn state_serde() {
     let sphere1 = Sphere::new(
         Point3::new(0., 0., 0.),
         0.5,
-        crate::material::Material::Metal {
-            albedo: Color::new(1.0, 0.2, 0.2),
+        crate::material::Material::Metal(Metal {
+            albedo: Srgb::new(1.0, 0.2, 0.2),
             fuzz: 1.0,
-        },
+        }),
     );
 
     let sphere2 = Sphere::new(
         Point3::new(0., 0., 0.),
         0.5,
-        crate::material::Material::Lambertian {
-            albedo: Color::new(1.0, 0., 0.7),
-        },
+        crate::material::Material::Lambertian(Lambertian {
+            albedo: Srgb::new(1.0, 0., 0.7),
+        }),
     );
 
     let entities_vec = vec![sphere1, sphere2];
@@ -117,4 +119,11 @@ pub fn state_serde() {
 
     let state_deser: State = serde_json::from_str(&state_ser).unwrap();
     println!("State Deser: {:?}", state_deser);
+}
+
+#[test]
+fn init_from_file() {
+    let state_ser = State::from_json("state.json");
+    println!("State Ser: {:?}", state_ser);
+    
 }
