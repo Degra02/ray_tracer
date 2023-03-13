@@ -21,11 +21,5 @@ fn main() {
     let state = State::from_json("state.json");
 
     // Render
-
-    let _pb = ProgressBar::new(state.height as u64);
-    let _sty =
-        ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]")
-            .unwrap();
-
     render(state);
 }

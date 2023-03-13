@@ -11,6 +11,7 @@ use crate::{
     },
 };
 use image::{png::PNGEncoder, ColorType};
+use indicatif::{ProgressBar, ProgressStyle};
 use palette::Pixel;
 use palette::Srgb;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
@@ -28,11 +29,19 @@ pub fn render(state: State) {
     let mut pixels = vec![0; image_height * image_width * 3];
     let bands: Vec<(usize, &mut [u8])> = pixels.chunks_mut(image_width * 3).enumerate().collect();
 
+    let pb = ProgressBar::new(state.height as u64);
+    let sty =
+        ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} {pos:>7}/{len:7} \n {msg}")
+            .unwrap();
+    pb.set_style(sty);
+
     let start = Instant::now();
     bands.into_par_iter().for_each(|(i, band)| {
+        pb.inc(1);
         render_line(band, &state, i);
     });
-    println!("Time elapsed: {}s", start.elapsed().as_secs());
+    pb.finish_with_message("[Render Complete!]");
+    println!("Time elapsed: {}ms", start.elapsed().as_millis());
 
     write_image(&pixels, (image_width, image_height)).expect("error writing image");
 }
