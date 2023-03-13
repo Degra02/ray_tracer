@@ -20,9 +20,7 @@ To add a new sphere, add a new element to the vector in the json:
         "radius":3.5,
         "material":{
             "Metal":{
-                "albedo":{
-                    "e":[1.0,0.5,1.0]
-                    },
+                "albedo":[1.0,0.5,1.0],
                 "fuzz": 0.5
             }
         }
