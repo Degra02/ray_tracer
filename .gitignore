@@ -3,4 +3,5 @@
 Cargo.lock
 data/
 !data/*.mp4
+render.png
 
