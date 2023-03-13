@@ -25,7 +25,7 @@ pub enum Material {
     Lambertian(Lambertian),
     Metal(Metal),
     Dielectric(Dielectric),
-    Light {},
+    Light(Light),
 }
 
 pub trait Scatterable {
@@ -60,8 +60,21 @@ impl Scatterable for Material {
             Material::Lambertian(l) => l.scatter(ray, hit_record),
             Material::Metal(m) => m.scatter(ray, hit_record),
             Material::Dielectric(d) => d.scatter(ray, hit_record),
-            Material::Light {} => todo!(),
+            Material::Light(l) => l.scatter(ray, hit_record),
         }
+    }
+}
+
+#[serde_with::serde_as]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Light {
+
+}
+
+#[allow(unused)]
+impl Scatterable for Light {
+    fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Option<Ray>, Srgb)> {
+       Some((None, Srgb::new(1.0, 1.0, 1.0))) 
     }
 }
 
