@@ -9,8 +9,8 @@ use palette::Srgb;
 use rand::Rng;
 
 use crate::{
-    hittable::{sphere::Sphere},
-    material::{Material, Lambertian, Metal, Dielectric},
+    hittable::sphere::Sphere,
+    material::{Dielectric, Lambertian, Material, Metal},
     state::State,
     vec3::{Color, Point3},
 };

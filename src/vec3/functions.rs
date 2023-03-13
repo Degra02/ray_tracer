@@ -74,7 +74,7 @@ impl Vec3 {
         self[0].abs() < s && self[1].abs() < s && self[2].abs() < s
     }
 
-    pub fn unit_vec(&self) -> Vec3 {    
+    pub fn unit_vec(&self) -> Vec3 {
         *self * (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt64()
     }
 }

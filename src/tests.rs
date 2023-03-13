@@ -5,16 +5,14 @@ use palette::Srgb;
 use crate::{
     camera::Camera,
     hittable::sphere::Sphere,
+    material::{Lambertian, Metal},
     state::State,
-    vec3::{Color, Point3, Vec3}, material::{Metal, Lambertian},
+    vec3::{Color, Point3, Vec3},
 };
 
 #[test]
 pub fn test_serde() {
-    use crate::{
-        material::Material,
-        vec3::{Point3},
-    };
+    use crate::{material::Material, vec3::Point3};
 
     let vec = vec![Point3::new(0., 0., 0.), Point3::new(1., 1., 0.)];
     let ser_vec = serde_json::to_string(&vec).unwrap();
@@ -125,5 +123,4 @@ pub fn state_serde() {
 fn init_from_file() {
     let state_ser = State::from_json("state.json");
     println!("State Ser: {:?}", state_ser);
-    
 }

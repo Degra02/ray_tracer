@@ -49,11 +49,11 @@ impl Hittable for Sphere {
                         p,
                         normal: if front_face { normal } else { -normal },
                         front_face,
-                        material: self.material
+                        material: self.material,
                     });
                 }
             }
-        } 
+        }
         None
     }
 }

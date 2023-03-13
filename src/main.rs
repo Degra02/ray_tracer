@@ -1,10 +1,8 @@
 #![allow(dead_code)]
 
+use crate::state::State;
 use indicatif::{ProgressBar, ProgressStyle};
 use renderer::render;
-use crate::{
-    state::State
-};
 
 mod camera;
 mod hittable;

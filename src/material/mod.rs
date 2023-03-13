@@ -35,7 +35,7 @@ pub trait Scatterable {
 impl Default for Material {
     fn default() -> Self {
         Self::Lambertian(Lambertian {
-            albedo: Srgb::default()
+            albedo: Srgb::default(),
         })
     }
 }
@@ -60,11 +60,10 @@ impl Scatterable for Material {
             Material::Lambertian(l) => l.scatter(ray, hit_record),
             Material::Metal(m) => m.scatter(ray, hit_record),
             Material::Dielectric(d) => d.scatter(ray, hit_record),
-            Material::Light {  } => todo!(),
+            Material::Light {} => todo!(),
         }
     }
 }
-
 
 #[serde_with::serde_as]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -74,7 +73,7 @@ pub struct Lambertian {
 }
 
 impl Scatterable for Lambertian {
-    fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Option<Ray>, Srgb)> { 
+    fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Option<Ray>, Srgb)> {
         let mut scatter_direction = hit_record.normal + Vec3::random_in_unit_sphere();
         if scatter_direction.near_zero() {
             scatter_direction = hit_record.normal
@@ -85,41 +84,43 @@ impl Scatterable for Lambertian {
     }
 }
 
-
 #[serde_with::serde_as]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct Metal { 
+pub struct Metal {
     #[serde_as(as = "SrgbAsArray")]
     pub albedo: Srgb,
-    pub fuzz: f64
+    pub fuzz: f64,
 }
 
 impl Scatterable for Metal {
     fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Option<Ray>, Srgb)> {
-        let reflected = reflect(unit_vec(ray.dir()), hit_record.normal); 
+        let reflected = reflect(unit_vec(ray.dir()), hit_record.normal);
         let scattered = Ray::new(
             hit_record.p,
             reflected + self.fuzz * Vec3::random_in_unit_sphere(),
         );
         let attenuation = self.albedo;
         if dot(scattered.dir(), hit_record.normal) > 0. {
-           Some((Some(scattered), attenuation)) 
+            Some((Some(scattered), attenuation))
         } else {
             None
         }
     }
 }
 
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Dielectric {
-    pub ir: f64
+    pub ir: f64,
 }
 
 impl Scatterable for Dielectric {
     fn scatter(&self, ray: &Ray, hit_record: &HitRecord) -> Option<(Option<Ray>, Srgb)> {
         let attenuation = Srgb::new(1., 1., 1.);
-        let refraction_ratio = if hit_record.front_face { 1.0 / self.ir } else { self.ir }; 
+        let refraction_ratio = if hit_record.front_face {
+            1.0 / self.ir
+        } else {
+            self.ir
+        };
         let unit_direction = unit_vec(ray.dir());
 
         let cos_theta = f64::min(dot(-unit_direction, hit_record.normal), 1.0);
@@ -198,5 +199,3 @@ pub fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
 //         }
 //     }
 // }
-
-

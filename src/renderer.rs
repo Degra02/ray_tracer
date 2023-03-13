@@ -2,16 +2,17 @@ use std::{f64::INFINITY, fs::File, time::Instant};
 
 use crate::{
     hittable::{hit_world, sphere::Sphere},
+    material::Scatterable,
     ray::Ray,
     state::State,
-    utils::{random_float, clamp},
+    utils::{clamp, random_float},
     vec3::{
         functions::{dot, unit_vec},
         Color, Point3,
-    }, material::Scatterable,
+    },
 };
 use image::{png::PNGEncoder, ColorType};
-use palette::{Pixel};
+use palette::Pixel;
 use palette::Srgb;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
@@ -26,10 +27,7 @@ pub fn render(state: State) {
     let image_width = state.width.unwrap() as usize;
     let image_height = state.height as usize;
     let mut pixels = vec![0; image_height * image_width * 3];
-    let bands: Vec<(usize, &mut [u8])> = pixels
-        .chunks_mut(image_width * 3)
-        .enumerate()
-        .collect();
+    let bands: Vec<(usize, &mut [u8])> = pixels.chunks_mut(image_width * 3).enumerate().collect();
 
     let start = Instant::now();
     bands.into_par_iter().for_each(|(i, band)| {
@@ -44,7 +42,7 @@ pub fn render_line(pixels: &mut [u8], state: &State, y: usize) {
     let bounds = (state.width.unwrap() as usize, state.height as usize);
 
     for x in 0..bounds.0 {
-        let mut pixel_colors: Vec<f32>  = vec![0.0; 3];
+        let mut pixel_colors: Vec<f32> = vec![0.0; 3];
         for _s in 0..state.samples_per_pixel {
             let u = (x as f64 + random_float()) / (bounds.0 - 1) as f64;
             let v = (bounds.1 as f64 - (y as f64 + random_float())) / (bounds.1 - 1) as f64;
@@ -80,33 +78,44 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
         Some(hit_record) => {
             let light_red: f64 = 0.0;
             let light_green = 0.0;
-            let light_blue = 0.0; 
+            let light_blue = 0.0;
             let scattered = hit_record.material.scatter(&ray, &hit_record);
             match scattered {
-                Some((scattered_ray, albedo)) => {
-                   match scattered_ray {
+                Some((scattered_ray, albedo)) => match scattered_ray {
                     Some(sr) => {
-                       let target_color = ray_color(sr, world, depth - 1); 
-                       return Srgb::new(
-                        clamp((light_red as f32 + albedo.red * target_color.red) as f64, 0., 1.) as f32,
-                        clamp((light_green as f32 + albedo.green * target_color.green) as f64, 0., 1.) as f32,
-                        clamp((light_blue as f32 + albedo.blue * target_color.blue) as f64, 0., 1.) as f32);
-                    },
+                        let target_color = ray_color(sr, world, depth - 1);
+                        return Srgb::new(
+                            clamp(
+                                (light_red as f32 + albedo.red * target_color.red) as f64,
+                                0.,
+                                1.,
+                            ) as f32,
+                            clamp(
+                                (light_green as f32 + albedo.green * target_color.green) as f64,
+                                0.,
+                                1.,
+                            ) as f32,
+                            clamp(
+                                (light_blue as f32 + albedo.blue * target_color.blue) as f64,
+                                0.,
+                                1.,
+                            ) as f32,
+                        );
+                    }
                     None => albedo,
-                } 
                 },
                 None => Srgb::new(0., 0., 0.),
             }
-        },
+        }
         None => {
             let t = clamp(0.5 * (ray.dir().unit_vec().y() + 1.0), 0., 1.);
-            let u: f64 = clamp(0.5 * (ray.dir().unit_vec().x() + 1.0), 0., 1.);         
+            let u: f64 = clamp(0.5 * (ray.dir().unit_vec().x() + 1.0), 0., 1.);
             return Srgb::new(
                 ((1.0 - t) * 1.0 + t * 0.5) as f32,
                 ((1.0 - t) * 1.0 + t * 0.7) as f32,
                 ((1.0 - t) * 1.0 + t * 1.0) as f32,
-            );    
-        },
+            );
+        }
     }
 }
 
