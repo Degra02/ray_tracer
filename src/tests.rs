@@ -5,7 +5,7 @@ use palette::Srgb;
 use crate::{
     camera::Camera,
     hittable::sphere::Sphere,
-    material::{Lambertian, Metal},
+    material::{Lambertian, Metal, Light},
     state::State,
     vec3::{Point3, Vec3},
 };
@@ -101,6 +101,7 @@ pub fn state_serde() {
     );
 
     let entities_vec = vec![sphere1, sphere2];
+    let lights = vec![Sphere::new(Point3::new(-3., 2., 1.), 0.3, crate::material::Material::Light(Light::new()))];
 
     let state = State::new(
         100,
@@ -111,6 +112,7 @@ pub fn state_serde() {
         frames,
         camera,
         entities_vec,
+        lights
     );
     let state_ser = serde_json::to_string(&state).unwrap();
     println!("State Ser: {}", state_ser);

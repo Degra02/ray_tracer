@@ -16,6 +16,8 @@ pub struct State {
 
     pub camera: Camera,
     pub entities_vec: Vec<Sphere>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lights: Option<Vec<Sphere>>,
 }
 
 impl State {
@@ -28,6 +30,7 @@ impl State {
         frames: u32,
         camera: Camera,
         entities_vec: Vec<Sphere>,
+        lights: Vec<Sphere>
     ) -> Self {
         Self {
             samples_per_pixel,
@@ -38,6 +41,7 @@ impl State {
             frames,
             camera,
             entities_vec,
+            lights: Some(lights)
         }
     }
 

@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 
 use crate::state::State;
-use indicatif::{ProgressBar, ProgressStyle};
 use renderer::render;
 
 mod camera;
