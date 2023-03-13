@@ -2,17 +2,14 @@
 
 use std::{
     fs::File,
-    io::{Read, Write},
+    io::{Write},
 };
 
-use palette::Srgb;
+
 use rand::Rng;
 
 use crate::{
-    hittable::sphere::Sphere,
-    material::{Dielectric, Lambertian, Material, Metal},
-    state::State,
-    vec3::{Color, Point3},
+    vec3::{Color},
 };
 
 const pi: f64 = std::f64::consts::PI;

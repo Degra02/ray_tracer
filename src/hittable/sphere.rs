@@ -42,7 +42,7 @@ impl Hittable for Sphere {
                     let normal = (p - self.center) / self.radius;
                     let front_face = dot(r.dir(), normal) < 0.0;
 
-                    let (u, v) = u_v_from_sphere_hit_point(p - self.center);
+                    let (_u, _v) = u_v_from_sphere_hit_point(p - self.center);
 
                     return Some(HitRecord {
                         t: *root,

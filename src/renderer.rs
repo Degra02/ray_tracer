@@ -7,8 +7,7 @@ use crate::{
     state::State,
     utils::{clamp, random_float},
     vec3::{
-        functions::{dot, unit_vec},
-        Color, Point3,
+        functions::{dot}, Point3,
     },
 };
 use image::{png::PNGEncoder, ColorType};
@@ -84,7 +83,7 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
                 Some((scattered_ray, albedo)) => match scattered_ray {
                     Some(sr) => {
                         let target_color = ray_color(sr, world, depth - 1);
-                        return Srgb::new(
+                        Srgb::new(
                             clamp(
                                 (light_red as f32 + albedo.red * target_color.red) as f64,
                                 0.,
@@ -100,7 +99,7 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
                                 0.,
                                 1.,
                             ) as f32,
-                        );
+                        )
                     }
                     None => albedo,
                 },
@@ -109,12 +108,12 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
         }
         None => {
             let t = clamp(0.5 * (ray.dir().unit_vec().y() + 1.0), 0., 1.);
-            let u: f64 = clamp(0.5 * (ray.dir().unit_vec().x() + 1.0), 0., 1.);
-            return Srgb::new(
+            let _u: f64 = clamp(0.5 * (ray.dir().unit_vec().x() + 1.0), 0., 1.);
+            Srgb::new(
                 ((1.0 - t) * 1.0 + t * 0.5) as f32,
                 ((1.0 - t) * 1.0 + t * 0.7) as f32,
                 ((1.0 - t) * 1.0 + t * 1.0) as f32,
-            );
+            )
         }
     }
 }

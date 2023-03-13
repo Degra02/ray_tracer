@@ -7,7 +7,7 @@ use crate::{
     hittable::sphere::Sphere,
     material::{Lambertian, Metal},
     state::State,
-    vec3::{Color, Point3, Vec3},
+    vec3::{Point3, Vec3},
 };
 
 #[test]

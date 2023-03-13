@@ -22,8 +22,8 @@ fn main() {
 
     // Render
 
-    let pb = ProgressBar::new(state.height as u64);
-    let sty =
+    let _pb = ProgressBar::new(state.height as u64);
+    let _sty =
         ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} [{msg}]")
             .unwrap();
 
