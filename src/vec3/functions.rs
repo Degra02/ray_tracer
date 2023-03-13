@@ -73,6 +73,10 @@ impl Vec3 {
         let s = 1e-8;
         self[0].abs() < s && self[1].abs() < s && self[2].abs() < s
     }
+
+    pub fn unit_vec(&self) -> Vec3 {
+        *self * (self[0] * self[0] + self[1] * self[1] + self[2] * self[2]).inv_sqrt64()
+    }
 }
 
 pub fn dot(v1: Vec3, v2: Vec3) -> f64 {

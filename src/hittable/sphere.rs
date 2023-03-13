@@ -26,31 +26,44 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, r: Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin() - self.center;
         let a = r.dir().norm_squared();
         let half_b = dot(oc, r.dir());
         let c = oc.norm_squared() - self.radius * self.radius;
         let discriminant = half_b * half_b - a * c;
-        if discriminant < 0. {
-            return false;
-        }
+        if discriminant >= 0.0 {
+            let sqrtd = discriminant.sqrt();
+            let root_a = ((-half_b) - sqrtd) / a;
+            let root_b = ((-half_b) + sqrtd) / a;
+            for root in [root_a, root_b].iter() {
+                if *root < t_max && *root > t_min {
+                    let p = r.at(*root);
+                    let normal = (p - self.center) / self.radius;
+                    let front_face = dot(r.dir(), normal) < 0.0;
 
-        let mut root = (-half_b - f64::sqrt(discriminant)) / a;
+                    let (_u, _v) = u_v_from_sphere_hit_point(p - self.center);
 
-        if root < t_min || root > t_max {
-            root = (-half_b + f64::sqrt(discriminant)) / a;
-            if root < t_min || root > t_max {
-                return false;
+                    return Some(HitRecord {
+                        t: *root,
+                        p,
+                        normal: if front_face { normal } else { -normal },
+                        front_face,
+                        material: self.material,
+                    });
+                }
             }
         }
-
-        rec.t = root;
-        rec.p = r.at(root);
-        let outward_normal = (rec.p - self.center) / self.radius;
-        rec.set_face_normal(r, outward_normal);
-        rec.material = self.material;
-
-        true
+        None
     }
+}
+
+fn u_v_from_sphere_hit_point(hit_point_on_sphere: Point3) -> (f64, f64) {
+    let n = hit_point_on_sphere.unit_vec();
+    let x = n.x();
+    let y = n.y();
+    let z = n.z();
+    let u = (x.atan2(z) / (2.0 * std::f64::consts::PI)) + 0.5;
+    let v = y * 0.5 + 0.5;
+    (u, v)
 }
