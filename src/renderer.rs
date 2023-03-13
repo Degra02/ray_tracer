@@ -1,4 +1,4 @@
-use std::{f64::INFINITY, fs::File, time::Instant};
+use std::{f64::INFINITY, fs::File, time::Instant, borrow::Borrow};
 
 use crate::{
     hittable::{hit_world, sphere::Sphere},
@@ -14,6 +14,7 @@ use image::{png::PNGEncoder, ColorType};
 use indicatif::{ProgressBar, ProgressStyle};
 use palette::Pixel;
 use palette::Srgb;
+use rand::Rng;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
 pub fn write_image(pixels: &[u8], bounds: (usize, usize)) -> Result<(), std::io::Error> {
@@ -55,7 +56,7 @@ pub fn render_line(pixels: &mut [u8], state: &State, y: usize) {
             let u = (x as f64 + random_float()) / (bounds.0 - 1) as f64;
             let v = (bounds.1 as f64 - (y as f64 + random_float())) / (bounds.1 - 1) as f64;
             let r = state.camera.get_ray(u, v);
-            let c = ray_color(r, &state.entities_vec, state.max_depth);
+            let c = ray_color(r, &state.entities_vec, state.lights.as_ref(), state.max_depth, state.max_depth);    
             pixel_colors[0] += c.red;
             pixel_colors[1] += c.green;
             pixel_colors[2] += c.blue
@@ -75,7 +76,7 @@ pub fn render_line(pixels: &mut [u8], state: &State, y: usize) {
     }
 }
 
-pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
+pub fn ray_color(ray: Ray, world: &Vec<Sphere>, lights_opt: Option<&Vec<Sphere>>, max_depth: i32, depth: i32) -> Srgb {
     if depth <= 0 {
         return Srgb::new(0., 0., 0.);
     }
@@ -84,14 +85,35 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
 
     match hit {
         Some(hit_record) => {
-            let light_red: f64 = 0.0;
-            let light_green = 0.0;
-            let light_blue = 0.0;
+            let mut light_red: f64 = 0.0;
+            let mut light_green = 0.0;
+            let mut light_blue = 0.0;
+            let prob = 0.1;
             let scattered = hit_record.material.scatter(&ray, &hit_record);
+
             match scattered {
-                Some((scattered_ray, albedo)) => match scattered_ray {
+                Some((scattered_ray, albedo)) => {
+                    match lights_opt {
+                        Some(lights) => {
+                        if lights.len() > 0 && depth > (max_depth - 2) && rand::thread_rng().gen::<f64>() > (1.0 - lights.len() as f64 * prob){
+                            for light in lights {
+                                let light_ray = Ray::new(hit_record.p, light.center - hit_record.p);
+                                let target_color = ray_color(light_ray, world, Some(lights), 2, 1);
+                                light_red += (albedo.red * target_color.red) as f64;
+                                light_green += (albedo.green * target_color.green) as f64;
+                                light_blue += (albedo.blue * target_color.blue) as f64; 
+                            }
+                            light_red /= lights.len() as f64;
+                            light_green /= lights.len() as f64;
+                            light_blue /= lights.len() as f64;
+                        }
+                        },
+                        None => {},
+                    } 
+
+                    match scattered_ray {        
                     Some(sr) => {
-                        let target_color = ray_color(sr, world, depth - 1);
+                        let target_color = ray_color(sr, world, lights_opt, max_depth, depth - 1);
                         Srgb::new(
                             clamp(
                                 (light_red as f32 + albedo.red * target_color.red) as f64,
@@ -109,9 +131,10 @@ pub fn ray_color(ray: Ray, world: &Vec<Sphere>, depth: i32) -> Srgb {
                                 1.,
                             ) as f32,
                         )
-                    }
+                }
                     None => albedo,
-                },
+                }
+            }
                 None => Srgb::new(0., 0., 0.),
             }
         }

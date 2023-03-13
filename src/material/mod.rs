@@ -67,8 +67,12 @@ impl Scatterable for Material {
 
 #[serde_with::serde_as]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct Light {
+pub struct Light {}
 
+impl Light {
+    pub fn new() -> Self {
+        Self {  }
+    }
 }
 
 #[allow(unused)]
