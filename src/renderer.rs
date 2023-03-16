@@ -18,7 +18,7 @@ use rand::Rng;
 use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
 pub fn write_image(pixels: &[u8], bounds: (usize, usize)) -> Result<(), std::io::Error> {
-    let output = File::create("render.png")?;
+    let output = File::create("data/render.png")?;
     let encoder = PNGEncoder::new(output);
     let _err = encoder.encode(pixels, bounds.0 as u32, bounds.1 as u32, ColorType::RGB(8));
     Ok(())
