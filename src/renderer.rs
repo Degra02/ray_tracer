@@ -1,4 +1,4 @@
-use std::{f64::INFINITY, fs::File, time::Instant, borrow::Borrow};
+use std::{f64::INFINITY, fs::File, time::Instant, borrow::Borrow, fmt::format};
 
 use crate::{
     hittable::{hit_world, sphere::Sphere},
@@ -32,13 +32,24 @@ pub fn render(state: State) {
 
     let pb = ProgressBar::new(state.height as u64);
     let sty =
-        ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} {pos:>7}/{len:7} \n {msg}")
+        ProgressStyle::with_template("[{elapsed_precise}] {prefix} {bar:40.cyan/blue} {msg}")
             .unwrap();
     pb.set_style(sty);
 
     let start = Instant::now();
     bands.into_par_iter().for_each(|(i, band)| {
+        let a = pb.position();
         pb.inc(1);
+
+        if a != 0{
+            let elapsed = start.elapsed().as_millis();
+            let time_per_op = elapsed / a as u128;
+
+            let time_left = time_per_op * (state.height as u64 - a) as u128;
+            pb.set_prefix(format!("[Remaining: {}ms]", time_left));
+        }
+
+        pb.set_message(format!("{}%",  a * 100 / state.height as u64));
         render_line(band, &state, i);
     });
     pb.finish_with_message("[Render Complete!]");
