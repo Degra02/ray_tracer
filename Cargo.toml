@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 fast_inv_sqrt = { version = "1.0.1", features = ["omit-checking"] }
-image-convert = "0.13.0"
+image-convert = "0.15.0"
 indicatif = "0.17.3"
 rand = "0.8.5"
 rayon = "1"
